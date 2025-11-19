@@ -1379,10 +1379,6 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
       if (!videoPlayer.paused) {
         videoPlayer.pause();
       } else {
-        // Stop all other media before playing this one
-        document.querySelectorAll('audio, video').forEach(media => {
-            if (media !== videoPlayer) media.pause();
-        });
         videoPlayer.play();
       }
     }
