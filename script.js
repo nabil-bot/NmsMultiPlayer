@@ -263,11 +263,7 @@ menu.addEventListener('click', (e) => {
         console.error('Failed to create YouTube player instance');
       } else {
         console.log('YouTube player instance created successfully');
-        try{
-          player.setVolume(volumeSlider.value);
-        }catch(error){
-          console.log(error)
-        }
+       
       }
     }
 
@@ -280,8 +276,17 @@ menu.addEventListener('click', (e) => {
       }
     }
     waitForYouTubeAPI();
-
-    
+    try{
+    if (player) {
+        try{
+            player.setVolume(volumeSlider.value);
+          }catch(error){
+            alert(error)
+          }
+      }
+    }catch(error){
+      alert(error)
+    }
   } // initializeYouTubeAPI function ends here
 
 
