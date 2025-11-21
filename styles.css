@@ -1,0 +1,669 @@
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f9ff;
+}
+
+header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+}
+
+#videos-container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.audio-container, .video-container {
+  width: 100%;
+  margin-top: 12px;
+  margin-bottom: 6px;
+  border: 1px solid #ccc;
+  /* padding: 5px; */
+  border-radius: 8px;
+  box-shadow: 1px 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.local-video-player {
+  /* 2. Set width and height to 100% of the parent container */
+  width: 100%;
+
+  
+  /* 3. (Optional but Recommended) Ensure the video covers the entire container 
+     without distortion, cropping the edges if necessary. */
+  object-fit: cover; 
+}
+
+
+.audio-controls, .local-video-controls{
+  justify-content: center; 
+  flex-direction: column;
+  gap: 10px;
+}
+
+.otherAudioControllersContainer, .otherVideoControllersContainer{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+}
+
+.otherVideoControllersContainer{
+  padding-left: 4%;
+  padding-right: 4%;
+  padding-top: 2%;
+}
+
+.global-controls-container{
+  display: flex;
+  max-height: 20px;
+  padding-left: 8%;
+  padding-right: 8%;
+  gap: 5%;
+}
+
+
+
+.playAll, .pauseAll {
+    /* 1. Sizing and Layout (Mobile-Friendly Touch Targets) */
+    padding: 12px 24px;
+    margin: 0 8px; /* Space between the two buttons */
+    min-width: 140px;
+    min-height: 48px; /* Recommended minimum touch target size */
+    
+    /* 2. Typography and Appearance */
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 24px; /* Pill shape for modern look */
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    
+    /* 3. Smooth Animations */
+    transition: 
+        background-color 0.2s ease-out, 
+        transform 0.1s ease-out,
+        box-shadow 0.2s ease-out;
+    
+    /* 4. Icon Styling */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    text-align: center;
+}
+
+/* --- Play All (Primary Action - Green) --- */
+.playAll {
+    background-color: #4CAF50; /* A pleasant green */
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); /* Subtle shadow for depth */
+}
+
+/* --- Pause All (Secondary Action - Dark/Neutral) --- */
+.pauseAll {
+    background-color: #e0e0e0; /* Light gray background */
+    color: #333; /* Dark text for contrast */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.playAll:hover, .playAll:focus {
+    background-color: #43A047; /* Slightly darker on hover */
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.pauseAll:hover, .pauseAll:focus {
+    background-color: #cacaca; /* Slightly darker on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Active/Pressed Effect (Mobile Touch Animation) */
+.playAll:active, .pauseAll:active {
+    /* Subtle press down effect */
+    transform: scale(0.98); 
+    /* Reduce shadow for "sunk" look */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); 
+    transition-duration: 0.05s; /* Faster animation on press */
+}
+
+/* --- Mobile Responsiveness (Stacking on smaller screens) --- */
+@media (max-width: 480px) {
+    body {
+        /* Align buttons vertically in a column */
+        flex-direction: column;
+    }
+    
+    .playAll, .pauseAll {
+        /* Take full available width for a better tap experience */
+        width: 100%; 
+        max-width: 300px;
+        margin: 8px 0; /* Add vertical margin instead of horizontal */
+    }
+}
+
+
+
+
+
+.video-wrapper {
+  /* margin: 2%; */
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 1px 6px 6px rgba(0, 0, 0, 0.1); 
+  background-color: #f1f2f4;
+
+}
+
+.video-wrapper iframe {
+  width: 100%;
+  
+  /* border-radius: 4px; */
+}
+
+.input-group {
+  margin-bottom: 10px;
+}
+
+.slider {
+  width: 100%;
+}
+
+#controls {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#controls input[type="text"] {
+  width: calc(90% - 42px); 
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+#controls button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#controls button:hover {
+  background-color: #0056b3;
+}
+
+
+@media screen and (max-width: 600px) {
+  #controls {
+    flex-direction: column;
+    align-items: center; 
+  }
+
+  #controls input[type="text"] {
+    width: calc(90% - 20px); 
+    margin-right: 0;
+  }
+
+  #controls button {
+    width: calc(50% - 15px);
+    margin-top: 10px;
+  }
+
+  .video-wrapper {
+    width: 100%;
+    padding-left: 2%;
+    padding-right: 2%;
+    padding-bottom: 3%;
+
+  }
+
+  #videos-container {
+    padding: 1px;
+  }
+
+}
+
+.time-label{
+  font-size: smaller;
+}
+
+.volume-icon {
+
+  font-size: 1.2em;
+  color: #3363ff;
+}
+
+.video-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+
+.volume-container {
+  display: flex; 
+  align-items: center; 
+  padding: 7px;
+  padding-bottom: 12px;
+  padding-top: 10px;
+  background-color: #f2f9ff;
+  border-radius: 6px;
+  border-color: #007BFF;
+  border-width: 1px;
+}
+
+.remove-btn {
+  margin-left: 5px;
+	margin-bottom: 8px;
+  padding: 5px 10px;
+  border: none;
+  background-color: #eaedff; 
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  background-color: #d7dbff;
+}
+
+input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #0099ff; 
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+label {
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+#globalControls {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center; 
+  height: 100vh; 
+}
+
+
+
+
+
+/* Global styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+
+#videos-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#controls {
+  text-align: center;
+  margin: 10px auto;
+	flex-direction: row;
+	
+}
+
+/* Styling for small screens (mobile) */
+@media screen and (max-width: 600px) {
+
+
+
+
+  header h1 {
+    font-size: 20px;
+  }
+}
+
+/* Styling for big screens (desktop) */
+@media screen and (min-width: 601px) {
+
+  .audio-container{
+    width: 40%;
+    margin-top: 16px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 1px 6px 6px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+  }
+
+
+  header h1 {
+    font-size: 28px;
+  }
+  #videos-container {
+    padding: 100px;
+    
+  }
+}
+
+/* Styles for global controls */
+#goblaControls {
+  text-align: center;
+  margin-top: 20px;
+  padding-bottom: 5%;
+}
+
+/* Optional: Style the checkbox label */
+#goblaControls label {
+  margin-left: 5px;
+  font-size: 16px;
+  color: #333;
+  
+}
+
+
+
+
+
+.video-speed-select {
+  width: 50px;
+  height: 26px;
+  padding: 5px; /* Add some padding for better appearance */
+  font-size: 14px; /* Adjust font size */
+  border: 1px solid #ccc; /* Add border */
+  border-radius: 5px; /* Add border radius */
+  background-color: #fff; /* Background color */
+  color: #333; /* Text color */
+}
+
+/* Style for option elements */
+.video-speed-select option {
+  font-size: 14px; /* Adjust font size */
+  padding: 5px 10px; /* Add padding */
+}
+
+/* Optional: Hover effect for options */
+.video-speed-select option:hover {
+  background-color: #f0f0f0; /* Change background color on hover */
+}
+
+
+
+.next-btn, .previous-btn{
+  flex-grow: 1;
+  margin: 3px;
+  padding: 6px 12px;
+}
+
+.audio-play-pause, .video-play-pause{
+  padding: 6px 12px;
+}
+
+/* Style for the audio element */
+audio {
+  display: block;
+  width: 320px; /* Set your preferred width */
+  margin: 20px auto; /* Center the audio element */
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+/* Style for the audio controls */
+audio::-webkit-media-controls-panel {
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: relative;
+}
+/* Style for the audio timeline control */
+audio::-webkit-media-controls-timeline {
+  width: 100%; /* Take the whole width */
+  position: absolute;
+  bottom: 30px; /* Adjust top position to create space */
+}
+
+/* Style for the audio control buttons */
+audio::-webkit-media-controls-play-button,
+audio::-webkit-media-controls-pause-button,
+audio::-webkit-media-controls-volume-slider {
+  filter: invert(1); /* Invert button colors */
+}
+
+/* Style for the audio time display */
+audio::-webkit-media-controls-current-time-display,
+audio::-webkit-media-controls-time-remaining-display {
+  color: #fff;
+  font-size: 12px;
+  margin: 0 5px;
+}
+
+.AudioFileName, .VideoFileName{
+  font-weight: 700;
+  font-size: 14px;
+	width: 100%;
+ 	white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden;    /* Hides the overflowing text */
+  text-overflow: ellipsis; /* Adds an ellipsis (…) to indicate clipped text */
+  display: block;      /* Ensure the label behaves like a block element */
+	margin-top: 5px;
+	margin-bottom: 8px;
+}
+
+.audio-controls {
+  display: flex; 
+  /* align-items: center; */
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.audio-controls input[type="range"] {
+  width: 100%;
+  /* margin: 0 10px; */
+}
+
+.audio-controls select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+
+
+.group-container {
+  margin-top: 20px;
+  padding-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.remove-container{
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+/*  justify-content: space-between;*/
+}
+
+.sliderContainer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Optional: Align items vertically center */
+  padding: 10px; 
+}
+
+
+
+.slider-container {
+  flex-direction: column;
+  /* width: 90%; */
+  padding: 10px;
+  background-color: #f0f0f0; /* Optional: Adds a background color */
+  border: 1px solid #ccc; /* Optional: Adds a border */
+  border-radius: 5px; /* Optional: Rounds the corners of the container */
+  margin-bottom: 5px;
+}
+
+.timeline-slider {
+  width: 100%;
+  margin-bottom: 10px; /* Adds space between the slider and the labels */
+}
+
+.timeline-slider:disabled {
+  opacity: 0.8; /* Makes the slider appear faded */
+  cursor: not-allowed; /* Changes the cursor to indicate it's not clickable */
+}
+
+.timeline-slider {
+  width: 100%;
+  height: 10px;
+  background: #ddd;
+  border-radius: 5px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  width: 25px;
+  height: 20px;
+  background: #4CAF50;
+  border-radius: 10%;
+  cursor: pointer;
+}
+
+.timeline-slider:disabled::-webkit-slider-thumb {
+  height: 10px;
+  opacity: 0.85;
+}
+
+.timeline-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #4CAF50;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+
+
+.timelabelContainer {
+  display: flex;
+  flex-direction: row;
+	justify-content: space-between;
+  /* height: 15px; */
+}
+
+.time-label {
+  font-size: 14px; /* Adjust font size as needed */
+}
+
+
+.video-speed-label{
+  padding-right: 6px;
+}
+
+	  #file-input {
+            display: none;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            color: white;
+			background-color: #92FF93;
+            padding: 10px 20px; /* Add padding */
+            font-size: 16px; /* Adjust font size */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .file-input-label:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+
+        .file-input-label:active {
+            transform: scale(0.98); /* Slightly shrink on click */
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            color: #555; /* Subtle text color */
+        }
+
+
+
+
+
+      /* Style for the menu button */
+.MenuButton-class {
+  /* background-color: #007BFF; */
+  color: black;
+  border: none;
+  padding: 4px 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+}
+
+/* Style for the Font Awesome icon inside the button */
+.MenuButton-class i {
+  margin: 0;
+}
+
+/* Dropdown menu styles */
+.dropdown-menu {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Menu item styles */
+.menu-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background-color: #007BFF;
+  color: #fff;
+}
+  
+
