@@ -266,7 +266,7 @@ menu.addEventListener('click', (e) => {
         try{
           player.setVolume(volumeSlider.value);
         }catch(error){
-          alert(error)
+          alert(error+" "+volumeSlider.value+" "+269);
         }
       }
     }
@@ -326,10 +326,10 @@ menu.addEventListener('click', (e) => {
     });
     videoControlsWrapper.appendChild(nextButton);
 
-    previousButton.style.height = '26px';
-    nextButton.style.height = '26px';
-    previousButton.style.fontSize = '15px';
-    nextButton.style.fontSize = '16px';
+    // previousButton.style.height = '26px';
+    // nextButton.style.height = '26px';
+    // previousButton.style.fontSize = '15px';
+    // nextButton.style.fontSize = '16px';
 
     var label = document.createElement('label');
     label.textContent = `${currentPlaylistIndex+1}/${playlistVideos.length}`;
