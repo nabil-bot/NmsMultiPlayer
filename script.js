@@ -451,6 +451,322 @@ const speed = 1;
 //     }
 // }
 
+// async function addVideoPlayer(
+//   videoUrl,
+//   volume,
+//   speed,
+//   isPlaylist = false,
+//   playlistVideos = [],
+//   timeFrame = 0,
+//   currentPlaylistIndex = 0,
+//   customPlaylist = false
+// ) {
+
+//   let videoId = isPlaylist
+//     ? getVideoId(playlistVideos[currentPlaylistIndex])
+//     : getVideoId(videoUrl);
+
+//   if (!videoId) return;
+
+//   const videosContainer = document.getElementById("videos-container");
+
+//   // Wrapper
+//   const videoWrapper = document.createElement("div");
+//   videoWrapper.classList.add("video-wrapper");
+
+//   // Iframe
+//   const iframe = document.createElement("iframe");
+//   iframe.height = "242";
+//   iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+//   iframe.frameBorder = "0";
+//   iframe.allow =
+//     "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+//   iframe.allowFullscreen = true;
+
+//   // Volume UI
+//   const volumeContainer = document.createElement("div");
+//   volumeContainer.classList.add("volume-container");
+
+//   const speakerIcon = document.createElement("i");
+//   speakerIcon.classList.add("fas", "fa-volume-up", "volume-icon");
+
+//   const volumeSlider = document.createElement("input");
+//   volumeSlider.type = "range";
+//   volumeSlider.min = 0;
+//   volumeSlider.max = 100;
+//   volumeSlider.value = volume;
+//   volumeSlider.classList.add("slider");
+//   volumeSlider.disabled = true;
+
+//   volumeContainer.appendChild(speakerIcon);
+//   volumeContainer.appendChild(volumeSlider);
+
+//   // Enable slider for 3.5 seconds
+//   let volumeDisableTimer = null;
+//   function enableVolumeTemporarily() {
+//     volumeSlider.disabled = false;
+//     clearTimeout(volumeDisableTimer);
+//     volumeDisableTimer = setTimeout(() => {
+//       volumeSlider.disabled = true;
+//     }, 3500);
+//   }
+
+//   volumeContainer.addEventListener("mousedown", enableVolumeTemporarily);
+
+//   // Save and apply volume
+//   volumeSlider.addEventListener("input", () => {
+//     setVolume(videoWrapper, volumeSlider.value);
+//     const dic = getCookie("urlDic");
+//     if (dic && dic[videoUrl]) {
+//       dic[videoUrl].volume = volumeSlider.value;
+//       setCookie("urlDic", dic, 10);
+//     }
+//   });
+
+//   speakerIcon.addEventListener("click", () => {
+//     const targetVol = volumeSlider.value > 0 ? 0 : 50;
+//     setVolume(videoWrapper, targetVol);
+//   });
+
+//   // Controls Area
+//   const videoControlsWrapper = document.createElement("div");
+//   videoControlsWrapper.classList.add("video-controls");
+
+//   // Menu Button
+//   const menuBtn = document.createElement("button");
+//   menuBtn.className = "MenuButton-class";
+
+//   const menuIcon = document.createElement("i");
+//   menuIcon.className = "fas fa-bars";
+//   menuBtn.appendChild(menuIcon);
+
+//   const menu = document.createElement("div");
+//   menu.className = "dropdown-menu";
+//   menu.style.display = "none";
+//   document.body.appendChild(menu);
+
+//   const menuItems = [
+//     { text: "Reload", iconClass: "fas fa-redo" },
+//     { text: "Set Pause Timer", iconClass: "fas fa-pause" },
+//     { text: "Copy Link", iconClass: "fas fa-copy" },
+//   ];
+
+//   menuItems.forEach((item) => {
+//     const el = document.createElement("div");
+//     el.className = "menu-item";
+
+//     const ic = document.createElement("i");
+//     ic.className = item.iconClass;
+//     ic.style.marginRight = "10px";
+
+//     el.appendChild(ic);
+//     el.append(item.text);
+
+//     el.onclick = () => {
+//       menu.style.display = "none";
+
+//       if (item.text === "Reload") {
+//         const old = iframe.src;
+//         iframe.src = "";
+//         setTimeout(() => (iframe.src = old), 25);
+//       }
+
+//       if (item.text === "Set Pause Timer") pauseVideo();
+//     };
+
+//     menu.appendChild(el);
+//   });
+
+//   menuBtn.onclick = (e) => {
+//     e.stopPropagation();
+//     const r = menuBtn.getBoundingClientRect();
+//     menu.style.top = `${r.bottom + window.scrollY}px`;
+//     menu.style.left = `${r.left + window.scrollX}px`;
+//     menu.style.display = menu.style.display === "block" ? "none" : "block";
+//   };
+
+//   document.addEventListener("click", () => (menu.style.display = "none"));
+//   menu.addEventListener("click", (e) => e.stopPropagation());
+
+//   videoControlsWrapper.appendChild(menuBtn);
+
+//   // Playlist buttons
+//   let label = null;
+
+//   if (isPlaylist) {
+//     const prevBtn = document.createElement("button");
+//     prevBtn.textContent = "⏮";
+//     prevBtn.className = "previous-btn";
+//     prevBtn.onclick = () => changePlaylistVideo(-1);
+
+//     const nextBtn = document.createElement("button");
+//     nextBtn.textContent = "⏭";
+//     nextBtn.className = "next-btn";
+//     nextBtn.onclick = () => changePlaylistVideo(+1);
+
+//     label = document.createElement("label");
+//     label.textContent = `${currentPlaylistIndex + 1}/${playlistVideos.length}`;
+//     label.style.fontSize = "14px";
+
+//     videoControlsWrapper.append(prevBtn, nextBtn, label);
+//   }
+
+//   // Remove button
+//   const removeBtn = document.createElement("button");
+//   const removeIcon = document.createElement("i");
+//   removeIcon.className = "fa-solid fa-xmark fa-xl";
+//   removeBtn.appendChild(removeIcon);
+//   removeBtn.className = "remove-btn";
+
+//   removeBtn.onclick = () => {
+//     removeVideo(videoWrapper, videoUrl);
+//     if (customPlaylist) return deleteCookie("customListDic");
+
+//     const dic = getCookie("urlDic");
+//     if (dic && dic[videoUrl]) {
+//       delete dic[videoUrl];
+//       Object.keys(dic).length
+//         ? setCookie("urlDic", dic, 10)
+//         : deleteCookie("urlDic");
+//     }
+//   };
+
+//   videoControlsWrapper.appendChild(removeBtn);
+
+//   // Append everything
+//   videoWrapper.append(iframe, volumeContainer, videoControlsWrapper);
+//   videosContainer.appendChild(videoWrapper);
+
+//   // ---- PLAYER INITIALIZATION ---- //
+//   initializeYouTubeAPI(iframe, volume, timeFrame);
+
+//   // ---- SAVE URL PROPERTIES ---- //
+//   if (!customPlaylist) {
+//     const dic = getCookie("urlDic") || {};
+//     dic[videoUrl] = dic[videoUrl] || { volume, timeFrame };
+//     setCookie("urlDic", dic, 10);
+//   }
+
+//   // ------------------------------
+//   //   INNER FUNCTIONS
+//   // ------------------------------
+
+//   function initializeYouTubeAPI(iframe, volume, timeFrame) {
+//     function createPlayer() {
+//       const player = new YT.Player(iframe, {
+//         events: {
+//           onReady(e) {
+//             e.target.setVolume(volume);
+//             e.target.seekTo(timeFrame);
+
+//             if (!players.includes(e.target)) players.push(e.target);
+
+//             // Force volume after player loads to fix autoplay-volume delay
+//             setTimeout(() => {
+//               try {
+//                 player.setVolume(volume);
+//               } catch {}
+//             }, 300);
+//           },
+
+//           onStateChange(e) {
+//             if (e.data === YT.PlayerState.ENDED) return changePlaylistVideo(+1);
+
+//             if (e.data === YT.PlayerState.PAUSED) {
+//               const dic = getCookie("urlDic");
+//               if (dic && dic[videoUrl]) {
+//                 dic[videoUrl].timeFrame = Math.floor(player.getCurrentTime());
+//                 setCookie("urlDic", dic, 10);
+//               }
+//             }
+//           },
+//         },
+//       });
+//     }
+
+//     function wait() {
+//       if (!window.YT || !YT.Player) return setTimeout(wait, 80);
+//       createPlayer();
+//     }
+//     wait();
+//   }
+
+//   function changePlaylistVideo(dir) {
+//     if (!playlistVideos.length) return;
+
+//     currentPlaylistIndex =
+//       (currentPlaylistIndex + dir + playlistVideos.length) %
+//       playlistVideos.length;
+
+//     if (label)
+//       label.textContent = `${currentPlaylistIndex + 1}/${playlistVideos.length}`;
+
+//     const newUrl = playlistVideos[currentPlaylistIndex];
+//     const newId = getVideoId(newUrl);
+
+//     iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
+//     initializeYouTubeAPI(iframe, volumeSlider.value, 0);
+
+//     if (customPlaylist) {
+//       const dic = getCookie("customListDic") || {};
+//       dic.currentIndex = currentPlaylistIndex;
+//       setCookie("customListDic", dic, 10);
+//     }
+//   }
+
+//   function pauseVideo() {
+//     const sec = parseInt(prompt("Enter seconds to pause:"), 10);
+//     if (!sec || sec <= 0) return alert("Invalid number");
+
+//     const p = players.find((x) => x.getIframe() === iframe);
+//     if (!p) return;
+
+//     alert(`Player will pause in ${sec} seconds`);
+//     setTimeout(() => p.pauseVideo(), sec * 1000);
+//   }
+// }
+
+function startCountdownTimer(wrapper, seconds) {
+  const box = wrapper.querySelector(".timer-status");
+  box.style.display = "inline-block";
+
+  function update() {
+    if (seconds < 0) {
+      box.style.display = "none";
+      return;
+    }
+    let m = Math.floor(seconds / 60);
+    let s = seconds % 60;
+    box.innerHTML = `⏱ ${m}:${s.toString().padStart(2, '0')} 
+      <span style="margin-left:8px; cursor:pointer;" class="edit-timer">✏️</span>
+      <span style="margin-left:6px; cursor:pointer;" class="clear-timer">❌</span>
+    `;
+    seconds--;
+  }
+
+  update();
+  let interval = setInterval(() => {
+    if (seconds < 0) {
+      clearInterval(interval);
+      box.style.display = "none";
+    } else update();
+  }, 1000);
+
+  // Click handlers
+  box.onclick = (e) => {
+    if (e.target.classList.contains("edit-timer")) {
+      clearInterval(interval);
+      pauseVideo(); // reopen modal
+    }
+    if (e.target.classList.contains("clear-timer")) {
+      clearInterval(interval);
+      box.style.display = "none";
+    }
+  };
+}
+
+
+
 async function addVideoPlayer(
   videoUrl,
   volume,
@@ -476,7 +792,7 @@ async function addVideoPlayer(
 
   // Iframe
   const iframe = document.createElement("iframe");
-  iframe.height = "242";
+  iframe.height = "252";
   iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
   iframe.frameBorder = "0";
   iframe.allow =
@@ -611,12 +927,34 @@ async function addVideoPlayer(
     videoControlsWrapper.append(prevBtn, nextBtn, label);
   }
 
+  
+  
+  
+  
+  
+  
+  // TIMER STATUS CONTAINER
+  const timerStatus = document.createElement("div");
+  timerStatus.className = "timer-status";
+  timerStatus.style.marginLeft = "10px";
+  timerStatus.style.fontSize = "12px";
+  timerStatus.style.color = "#333";
+  timerStatus.style.display = "none"; // hidden unless active
+  videoControlsWrapper.appendChild(timerStatus);
+
+  
+
+  
+  
+  
+  
   // Remove button
   const removeBtn = document.createElement("button");
   const removeIcon = document.createElement("i");
   removeIcon.className = "fa-solid fa-xmark fa-xl";
   removeBtn.appendChild(removeIcon);
   removeBtn.className = "remove-btn";
+  removeIcon.style.color = "black";
 
   removeBtn.onclick = () => {
     removeVideo(videoWrapper, videoUrl);
@@ -715,16 +1053,50 @@ async function addVideoPlayer(
   }
 
   function pauseVideo() {
-    const sec = parseInt(prompt("Enter seconds to pause:"), 10);
-    if (!sec || sec <= 0) return alert("Invalid number");
 
-    const p = players.find((x) => x.getIframe() === iframe);
-    if (!p) return;
+  const modal = document.getElementById("pause-timer-modal");
+  const minInput = document.getElementById("timer-min");
+  const secInput = document.getElementById("timer-sec");
 
-    alert(`Player will pause in ${sec} seconds`);
-    setTimeout(() => p.pauseVideo(), sec * 1000);
+  modal.style.display = "flex";
+
+  const cancel = document.getElementById("timer-cancel");
+  const set = document.getElementById("timer-set");
+
+  function close() {
+    modal.style.display = "none";
+    cancel.onclick = null;
+    set.onclick = null;
   }
+
+  cancel.onclick = close;
+
+  set.onclick = () => {
+    let m = parseInt(minInput.value) || 0;
+    let s = parseInt(secInput.value) || 0;
+    let total = m * 60 + s;
+
+    if (total <= 0) {
+      alert("Enter a valid time");
+      return;
+    }
+
+    close();
+
+    const player = players.find(p => p.getIframe() === iframe);
+    if (!player) return;
+
+    // Start countdown
+    startCountdownTimer(videoWrapper, total);
+
+    setTimeout(() => player.pauseVideo(), total * 1000);
+  };
 }
+
+}
+
+
+
 
 
 async function addVideo() {
@@ -1191,6 +1563,7 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
     RemoveIcon.className = "fa-solid fa-xmark fa-xl";
     removeButton.appendChild(RemoveIcon);
     removeButton.style = 'color: black';
+    
     removeButton.classList.add('remove-btn');
     
     removeButton.addEventListener('click', function() {
