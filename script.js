@@ -928,9 +928,7 @@ async function addVideoPlayer(
   }
 
   
-  
-  
-  
+
   
   
   // TIMER STATUS CONTAINER
