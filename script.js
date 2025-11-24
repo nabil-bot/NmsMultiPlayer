@@ -1268,6 +1268,7 @@ const fileInput = document.getElementById('file-input');
 async function addLocalVideoPlayer(url, name, timeFrame = 0, defaultVolume=0.8) {
   return new Promise((resolve, reject) => {
     // 1. Setup Containers and Video Element
+    
     const videosContainer = document.getElementById('videos-container');
     const videoContainer = document.createElement('div');
     videoContainer.classList.add('video-container');
@@ -2488,6 +2489,71 @@ function deleteCookie(name) {
 
 
 
+// fileInput.addEventListener('change', function(event) {
+//   const files = event.target.files;
+
+//   if (files.length > 0) {
+//     for (const file of files) {
+//       const url = URL.createObjectURL(file);
+      
+//       try {
+//         window.ReactNativeWebView.postMessage(JSON.stringify({ 
+//           type: 'SELECTED_FILE_URL', 
+//           state: url 
+//         }));
+//       } catch (error) {
+//         console.log(error);
+//       }
+
+//       const name = file.name;
+//       if (file.type.startsWith('audio/')) {
+//           let timeFrame = 0;
+//           let volume = 0;
+
+//           const fileDic = getCookie("fileDic");
+//           if (fileDic != null) {
+//             for (let savedUrl in fileDic) {
+//               if (savedUrl == url || name == fileDic[savedUrl]["name"]) {
+//                 timeFrame = fileDic[savedUrl]["timeFrame"];
+//                 volume = fileDic[savedUrl]["volume"];
+//               }
+//             }
+//           }
+//           addAudioPlayer(url, name, timeFrame, volume);
+//         }
+//         else if (file.type.startsWith('video/')) {
+//         // --- NEW: Handle video files ---
+//         let timeFrame = 0;
+//         let volume = 0.8;
+
+
+//         try{
+//         const fileDic = getCookie("fileDic");
+//         if (fileDic != null) {
+//           for (let savedUrl in fileDic) {
+//             if (savedUrl == url || name == fileDic[savedUrl]["name"]) {
+//               timeFrame = fileDic[savedUrl]["timeFrame"];
+//               volume = fileDic[savedUrl]["volume"];
+//             }
+//           }
+//         }
+        
+//         try{
+//           alert("url, name, timeframe:")
+//           addLocalVideoPlayer(url, name, timeFrame, volume); 
+//         } catch (error){
+//           alert(error)
+//         }
+//       } catch (error) {
+//         alert(error);
+//       }
+
+//       }
+//     }
+//   }
+// });
+
+
 fileInput.addEventListener('change', function(event) {
   const files = event.target.files;
 
@@ -2506,24 +2572,8 @@ fileInput.addEventListener('change', function(event) {
 
       const name = file.name;
       if (file.type.startsWith('audio/')) {
-          let timeFrame = 0;
-          let volume = 0;
-
-          const fileDic = getCookie("fileDic");
-          if (fileDic != null) {
-            for (let savedUrl in fileDic) {
-              if (savedUrl == url || name == fileDic[savedUrl]["name"]) {
-                timeFrame = fileDic[savedUrl]["timeFrame"];
-                volume = fileDic[savedUrl]["volume"];
-              }
-            }
-          }
-          addAudioPlayer(url, name, timeFrame, volume);
-        }
-        else if (file.type.startsWith('video/')) {
-        // --- NEW: Handle video files ---
         let timeFrame = 0;
-        let volume = 0.8;
+        let volume = 0;
 
         const fileDic = getCookie("fileDic");
         if (fileDic != null) {
@@ -2534,10 +2584,37 @@ fileInput.addEventListener('change', function(event) {
             }
           }
         }
-        addLocalVideoPlayer(url, name, timeFrame, volume); 
+        addAudioPlayer(url, name, timeFrame, volume);
+      }
+      else if (file.type.startsWith('video/')) {
+        let timeFrame = 0;
+        let volume = 0.8;
 
+        try {
+          const fileDic = getCookie("fileDic");
+          if (fileDic != null) {
+            for (let savedUrl in fileDic) {
+              if (savedUrl == url || name == fileDic[savedUrl]["name"]) {
+                timeFrame = fileDic[savedUrl]["timeFrame"];
+                volume = fileDic[savedUrl]["volume"];
+              }
+            }
+          }
+          
+          try {
+            addLocalVideoPlayer(url, name, timeFrame, volume); 
+          } catch (error) {
+            alert(error)
+          }
+        } catch (error) {
+          alert(error);
+        }
       }
     }
+    
+    // ⭐ THE CRITICAL LINE TO ADD: Reset the input's value.
+    // This makes the browser treat the next selection, even if it's the same file, as a change.
+    event.target.value = ''; 
   }
 });
 
