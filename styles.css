@@ -42,7 +42,7 @@ h1 {
   
   /* 3. (Optional but Recommended) Ensure the video covers the entire container 
      without distortion, cropping the edges if necessary. */
-  object-fit: cover; 
+  /* object-fit: cover;  */
 }
 
 

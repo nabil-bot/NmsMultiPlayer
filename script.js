@@ -743,7 +743,6 @@ function startCountdownTimer(wrapper, seconds) {
     `;
     seconds--;
   }
-
   update();
   let interval = setInterval(() => {
     if (seconds < 0) {
@@ -764,6 +763,8 @@ function startCountdownTimer(wrapper, seconds) {
     }
   };
 }
+
+
 
 
 
@@ -942,9 +943,8 @@ async function addVideoPlayer(
 
   
 
-  
-  
-  
+
+
   
   // Remove button
   const removeBtn = document.createElement("button");
@@ -1265,12 +1265,15 @@ function getCookie(name) {
 
 const fileInput = document.getElementById('file-input');
 
-async function addLocalVideoPlayer(url, name, timeFrame = 0) {
+async function addLocalVideoPlayer(url, name, timeFrame = 0, defaultVolume=0.8) {
   return new Promise((resolve, reject) => {
     // 1. Setup Containers and Video Element
     const videosContainer = document.getElementById('videos-container');
     const videoContainer = document.createElement('div');
     videoContainer.classList.add('video-container');
+
+    let timeUpdateTimerId = null;
+
 
     // Create the HTML5 Video element
     const videoPlayer = document.createElement('video');
@@ -1279,7 +1282,6 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
     videoPlayer.controls = false; // We'll use custom controls
     videoPlayer.loop = false;
     // Set default volume, if you want a video-specific default
-    const defaultVolume = 0.8; 
     videoPlayer.volume = defaultVolume;
 
     // 2. Play/Pause Button
@@ -1400,8 +1402,6 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
             });
     }
 });
-
-
     // 7. Volume Control
     const volumeContainer = document.createElement('div');
     volumeContainer.classList.add('volume-container');
@@ -1476,12 +1476,23 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
       timelineSlider.value = videoPlayer.currentTime;
       timelineSlider.max = videoPlayer.duration;
       durationLabel.textContent = `${formatTime(videoPlayer.duration)}`;
+      
+      
       // Update cookie data for time frame
-      var fileDic = getCookie("fileDic");
-      if (fileDic !== null && url in fileDic) {
-        fileDic[url]["timeFrame"] = videoPlayer.currentTime;
-        setCookie("fileDic", fileDic, 10);
-      }
+      // 🔥 MODIFICATION 2: Implement debouncing using the local timer ID
+      // ----------------------------------------------------------------------
+      clearTimeout(timeUpdateTimerId); // Clear any pending updates for this video
+      
+      timeUpdateTimerId = setTimeout(() => {
+        var fileDic = getCookie("fileDic");
+        if (fileDic !== null && url in fileDic) {
+          // Save the rounded time to prevent excessive decimal usage
+          fileDic[url]["timeFrame"] = Math.round(videoPlayer.currentTime);
+          setCookie("fileDic", fileDic, 10);
+        }
+      }, 1000); // Saves the time only once per second (1000ms)
+
+
     });
 
     videoPlayer.addEventListener('loadedmetadata', () => {
@@ -1683,7 +1694,7 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
           var urlProperties = {};
           urlProperties["name"] = name;
           urlProperties["timeFrame"] = timeFrame;
-          urlProperties["volume"] = defaultVolume.toFixed(1); // Save default volume
+          urlProperties["volume"] = defaultVolume; // defaultVolume.toFixed(1); // Save default volume
           fileDic[url] = urlProperties;
           setCookie("fileDic", keepLastFiveElements(fileDic), 10);
         }
@@ -1692,14 +1703,13 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0) {
         var urlProperties = {};
         urlProperties["name"] = name;
         urlProperties["timeFrame"] = timeFrame;
-        urlProperties["volume"] = defaultVolume.toFixed(1); // Save default volume
+        urlProperties["volume"] = defaultVolume; // defaultVolume.toFixed(1); // Save default volume
         fileDic[url] = urlProperties;
         setCookie("fileDic", fileDic, 10);
       }
     } catch (error) {
       alert("An error occurred during cookie management: " + error);
     }
-    
     resolve();
   });
 }
@@ -1711,6 +1721,10 @@ async function addAudioPlayer(url, name, timeFrame=0, volume=0.8) {
   const audioContainer = document.createElement('div');
   audioContainer.classList.add('audio-container');
   const audioPlayer = document.createElement('audio');
+  let pauseTimeoutId = null; 
+  let countdownIntervalId = null;
+  
+  
   audioPlayer.src = url;
   audioPlayer.controls = false;
   audioPlayer.loop = false;
@@ -1742,7 +1756,7 @@ async function addAudioPlayer(url, name, timeFrame=0, volume=0.8) {
   timelineSlider.classList.add('timeline-slider');
   timelineSlider.type = 'range';
   timelineSlider.min = '0';
-  timelineSlider.value = '0';
+  
   timelineSlider.step = '1';
   timelineSlider.disabled = true;
   let disableTimer; // Variable to store the timer
@@ -1894,6 +1908,11 @@ volumeContainer.addEventListener('mousedown', () => {
   if (fileDic !== null && fileDic[url] !== undefined) {
       audioPlayer.currentTime = fileDic[url]["timeFrame"];
       audioPlayer.volume = fileDic[url]["volume"];
+      timelineSlider.value = audioPlayer.currentTime; 
+      timelineSlider.max = audioPlayer.duration;
+    }
+    else{
+      timelineSlider.value = '0';
     }
   });
   audioPlayer.addEventListener('error', (e) => {
@@ -1914,8 +1933,22 @@ volumeContainer.addEventListener('mousedown', () => {
   audioControls.classList.add('audio-controls');
   const timeLabelContainer = document.createElement('div');
   timeLabelContainer.classList.add('timelabelContainer');
+  
+  
+  const timerStatus = document.createElement("div");
+  timerStatus.className = "timer-status";
+  timerStatus.style.marginLeft = "10px";
+  timerStatus.style.fontSize = "12px";
+  timerStatus.style.color = "#333";
+  timerStatus.style.display = "none";
+  
+  
   timeLabelContainer.appendChild(currentTimeLabel);
+  timeLabelContainer.appendChild(timerStatus);
+
   timeLabelContainer.appendChild(durationLabel);
+
+
   sliderContainer.appendChild(timeLabelContainer)
   otherAudioControllersContainer.appendChild(playPauseBtn);
   otherAudioControllersContainer.appendChild(backwardButton);
@@ -1941,12 +1974,11 @@ volumeContainer.addEventListener('mousedown', () => {
     audioContainer.remove();
     fileInput.value = '';
 
-    try {
+  try {
       var fileDic = getCookie("fileDic");
       if (fileDic !== null) {
         if (url in fileDic) {
           delete fileDic[url]
-
           if (Object.keys(fileDic).length == 0){
             deleteCookie("fileDic");
           }else{
@@ -1958,6 +1990,230 @@ volumeContainer.addEventListener('mousedown', () => {
       alert("An error occurred: " + error);
   }
   });
+
+
+  // --------------------------------------------------------
+    //   NEW INNER FUNCTION: Timer Countdown Logic
+    // --------------------------------------------------------
+    // function startCountdownTimer(totalSeconds) {
+
+    //   console.log("Starting countdown timer for", totalSeconds, "seconds.");
+    //   if (countdownIntervalId) clearInterval(countdownIntervalId);
+      
+    //   let timeLeft = totalSeconds;
+      
+    //   const updateDisplay = (time) => {
+    //     const m = Math.floor(time / 60);
+    //     const s = time % 60;
+    //     const formattedMinutes = String(m).padStart(2, "0");
+    //     const formattedSeconds = String(s).padStart(2, "0");
+    //     timerStatus.textContent = `⏸ Pauses in ${formattedMinutes}:${formattedSeconds}`;
+    //   };
+
+    //   updateDisplay(timeLeft);
+    //   timerStatus.style.display = "block";
+
+    //   countdownIntervalId = setInterval(() => {
+    //     timeLeft--;
+        
+    //     if (timeLeft < 0) {
+    //       clearInterval(countdownIntervalId);
+    //       countdownIntervalId = null;
+    //       timerStatus.textContent = "Paused.";
+    //          audioPlayer.pause(); 
+    //     pauseTimeoutId = null; 
+    //       // Hide status after a brief delay
+    //       setTimeout(() => {
+    //         timerStatus.style.display = "none";
+    //       }, 2000);
+    //     } else {
+    //       updateDisplay(timeLeft);
+    //     }
+    //   }, 1000);
+    // }
+
+
+    function startCountdownTimer(totalSeconds) {
+      console.log("Starting countdown timer for", totalSeconds, "seconds.");
+      
+      // 1. CLEAR existing interval if present
+      if (countdownIntervalId) clearInterval(countdownIntervalId);
+      
+      let timeLeft = totalSeconds;
+      
+      // 2. CLEAR the previous content of the timerStatus container
+      timerStatus.innerHTML = '';
+      
+      // --- Timer Display Element ---
+      const timerDisplay = document.createElement('span');
+      // timerDisplay.style.marginRight = '10px';
+      timerStatus.appendChild(timerDisplay);
+      
+      // --- Edit Button ---
+      const editBtn = document.createElement('button');
+      editBtn.textContent = '✏️';
+      editBtn.style.fontSize = '10px';
+      editBtn.style.marginRight = '5px';
+      editBtn.style.marginLeft = '5px';
+      editBtn.style.padding = '2px'
+      editBtn.onclick = () => {
+        // 3. Edit: Cancel current timers and call the setup function again
+        if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
+        if (countdownIntervalId) clearInterval(countdownIntervalId);
+        countdownIntervalId = null;
+        pauseTimeoutId = null;
+        timerStatus.style.display = "none";
+        setPauseTimer(); // This function handles getting the new time from the user
+      };
+      timerStatus.appendChild(editBtn);
+      
+      // --- Cancel Button ---
+      const cancelBtn = document.createElement('button');
+      cancelBtn.textContent = '❌';
+      cancelBtn.style.fontSize = '10px';
+      cancelBtn.style.marginRight = '5px';
+      cancelBtn.style.padding = '2px'
+      cancelBtn.onclick = () => {
+        // 4. Cancel: Clear all timers and hide the status
+        if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
+        if (countdownIntervalId) clearInterval(countdownIntervalId);
+        countdownIntervalId = null;
+        pauseTimeoutId = null;
+        timerStatus.style.display = "none";
+      };
+      timerStatus.appendChild(cancelBtn);
+
+      const updateDisplay = (time) => {
+        const m = Math.floor(time / 60);
+        const s = time % 60;
+        const formattedMinutes = String(m).padStart(2, "0");
+        const formattedSeconds = String(s).padStart(2, "0");
+        // 5. Update the dedicated display element
+        timerDisplay.textContent = `Pauses in ${formattedMinutes}:${formattedSeconds}`;
+      };
+
+      updateDisplay(timeLeft);
+      timerStatus.style.display = "flex"; // Use flex to align buttons nicely
+
+      countdownIntervalId = setInterval(() => {
+        timeLeft--;
+        
+        if (timeLeft < 0) {
+          clearInterval(countdownIntervalId);
+          countdownIntervalId = null;
+          
+          // Execute pause action
+          audioPlayer.pause(); 
+          pauseTimeoutId = null; 
+          
+          // Update status for completion
+          timerStatus.textContent = "Paused.";
+          
+          // Hide status after a brief delay
+          setTimeout(() => {
+            timerStatus.style.display = "none";
+          }, 2000);
+        } else {
+          updateDisplay(timeLeft);
+        }
+      }, 1000);
+    }
+
+
+
+  // --------------------------------------------------------
+    //   NEW INNER FUNCTION: Pause Timer Setup
+    // --------------------------------------------------------
+    function setPauseTimer() {
+      // Clear any previous timers before setting a new one
+      if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
+      if (countdownIntervalId) clearInterval(countdownIntervalId);
+
+      // const timeInput = prompt(
+      //   `Enter the pause time in seconds (Current timer: ${pauseTimeoutId ? 'Active' : 'None'}). Use '0' to cancel.`
+      // );
+
+      // if (timeInput === null) return; // User cancelled prompt
+
+      // const timeInSeconds = parseInt(timeInput);
+
+      // if (isNaN(timeInSeconds) || timeInSeconds < 0) {
+      //   alert('Invalid input. Please enter a valid non-negative number.');
+      //   return;
+      // }
+
+      // if (timeInSeconds === 0) {
+      //   timerStatus.style.display = "none";
+      //   timerStatus.textContent = "";
+      //   alert("Pause timer cancelled.");
+      //   return;
+      // }
+
+      // // Start the visual countdown
+      // startCountdownTimer(timeInSeconds);
+
+      // // Set the actual pause action
+      // pauseTimeoutId = setTimeout(() => {
+      //   audioPlayer.pause(); 
+      //   pauseTimeoutId = null; // Clear reference after execution
+      // }, timeInSeconds * 1000); 
+
+      // alert(`Player will pause in ${timeInSeconds} seconds.`);
+    
+    
+
+//       function pauseVideo() {
+
+  const modal = document.getElementById("pause-timer-modal");
+  const minInput = document.getElementById("timer-min");
+  const secInput = document.getElementById("timer-sec");
+
+  modal.style.display = "flex";
+
+  const cancel = document.getElementById("timer-cancel");
+  const set = document.getElementById("timer-set");
+
+  function close() {
+    modal.style.display = "none";
+    cancel.onclick = null;
+    set.onclick = null;
+  }
+
+  cancel.onclick = close;
+
+  set.onclick = () => {
+    let m = parseInt(minInput.value) || 0;
+    let s = parseInt(secInput.value) || 0;
+    let total = m * 60 + s;
+
+    if (total <= 0) {
+      alert("Enter a valid time");
+      return;
+    }
+
+    close();
+
+    // const player = players.find(p => p.getIframe() === iframe);
+    // if (!player) return;
+
+    // Start countdown
+    startCountdownTimer(total);
+
+    // setTimeout(() => player.pauseVideo(), total * 1000);
+  };
+
+
+// }
+    
+    
+    
+    
+    }
+
+
+
+
+
   const MenuButton = document.createElement('button');
   MenuButton.className = 'MenuButton-class';
   const icon = document.createElement('i');
@@ -1991,22 +2247,36 @@ menuItems.forEach(item => {
   menuItem.addEventListener('click', () => {
     // alert(`You clicked: ${item.text}`);
     if (item.text == 'Set Pause Timer'){
-      const timeInSeconds = prompt('Enter the time in seconds to pause:');
+  //     const timeInSeconds = prompt('Enter the time in seconds to pause:');
 
-  // Validate the input
-  if (timeInSeconds && !isNaN(timeInSeconds) && timeInSeconds > 0) {
+  // // Validate the input
+  // if (timeInSeconds && !isNaN(timeInSeconds) && timeInSeconds > 0) {
     
-    setTimeout(() => {
-      audioPlayer.pause(); 
-      }, timeInSeconds * 1000); 
+  //   setTimeout(() => {
+  //     audioPlayer.pause(); 
+  //     }, timeInSeconds * 1000); 
     
-    alert(`Player will pause in ${timeInSeconds} seconds.`);
+  //   alert(`Player will pause in ${timeInSeconds} seconds.`);
     
     
-  } else {
-    alert('Invalid input. Please enter a valid number.');
-  }
-    }
+  // } else {
+  //   alert('Invalid input. Please enter a valid number.');
+  // }
+    
+  setPauseTimer();
+
+
+
+
+
+
+
+
+
+
+
+
+}
 
     menu.style.display = 'none'; // Hide the menu after clicking
   });
@@ -2250,7 +2520,19 @@ fileInput.addEventListener('change', function(event) {
         }
         else if (file.type.startsWith('video/')) {
         // --- NEW: Handle video files ---
-        addLocalVideoPlayer(url, name); 
+        let timeFrame = 0;
+        let volume = 0;
+
+        const fileDic = getCookie("fileDic");
+        if (fileDic != null) {
+          for (let savedUrl in fileDic) {
+            if (savedUrl == url || name == fileDic[savedUrl]["name"]) {
+              timeFrame = fileDic[savedUrl]["timeFrame"];
+              volume = fileDic[savedUrl]["volume"];
+            }
+          }
+        }
+        addLocalVideoPlayer(url, name, timeFrame, volume); 
 
       }
     }
