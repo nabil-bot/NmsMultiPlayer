@@ -2523,7 +2523,7 @@ fileInput.addEventListener('change', function(event) {
         else if (file.type.startsWith('video/')) {
         // --- NEW: Handle video files ---
         let timeFrame = 0;
-        let volume = 0;
+        let volume = 0.8;
 
         const fileDic = getCookie("fileDic");
         if (fileDic != null) {
