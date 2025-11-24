@@ -1580,19 +1580,19 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0, defaultVolume=0.8) 
       // Logic to clear file input and delete cookie data
       // (Assuming fileInput is accessible in this scope)
       // fileInput.value = ''; 
-      try {
-        var fileDic = getCookie("fileDic");
-        if (fileDic !== null && url in fileDic) {
-          delete fileDic[url];
-          if (Object.keys(fileDic).length == 0) {
-            deleteCookie("fileDic");
-          } else {
-            setCookie("fileDic", fileDic, 10);
-          }
-        }
-      } catch (error) {
-        alert("An error occurred during removal: " + error);
-      }
+      // try {
+      //   var fileDic = getCookie("fileDic");
+      //   if (fileDic !== null && url in fileDic) {
+      //     delete fileDic[url];
+      //     if (Object.keys(fileDic).length == 0) {
+      //       deleteCookie("fileDic");
+      //     } else {
+      //       setCookie("fileDic", fileDic, 10);
+      //     }
+      //   }
+      // } catch (error) {
+      //   alert("An error occurred during removal: " + error);
+      // }
     });
 
     // 15. Menu Button (using the audio player's logic)
@@ -1974,21 +1974,23 @@ volumeContainer.addEventListener('mousedown', () => {
     audioContainer.remove();
     fileInput.value = '';
 
-  try {
-      var fileDic = getCookie("fileDic");
-      if (fileDic !== null) {
-        if (url in fileDic) {
-          delete fileDic[url]
-          if (Object.keys(fileDic).length == 0){
-            deleteCookie("fileDic");
-          }else{
-            setCookie("fileDic", fileDic, 10);
-          }
-        }
-      }
-  } catch (error) {
-      alert("An error occurred: " + error);
-  }
+  // try {
+  //     var fileDic = getCookie("fileDic");
+  //     if (fileDic !== null) {
+  //       if (url in fileDic) {
+  //         delete fileDic[url]
+  //         if (Object.keys(fileDic).length == 0){
+  //           deleteCookie("fileDic");
+  //         }else{
+  //           setCookie("fileDic", fileDic, 10);
+  //         }
+  //       }
+  //     }
+  // } catch (error) {
+  //     alert("An error occurred: " + error);
+  // }
+
+
   });
 
 
