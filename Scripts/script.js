@@ -404,6 +404,7 @@ async function addVideo() {
   } else {
     // non-YouTube → local HTML5 video
     addLocalVideoPlayer(videoUrl);
+    // addOnlineVideoPlayer(videoUrl)
   }
   videoUrlInput.value = '';
 }
@@ -584,6 +585,144 @@ function getCookie(name) {
   return null;
 }
 
+
+
+
+
+
+// function testDirectVideoUrlPlayback(url) {
+//   const container = document.getElementById('videos-container') || document.body;
+//   const video = document.createElement('video');
+//   video.src = url;
+//   video.style.width = '100%';
+//   video.style.height = 'auto';
+//   container.appendChild(video);
+//   video.play().catch(() => {
+//   });
+// }
+
+function addOnlineVideoPlayer(url) {
+  const videosContainer = document.getElementById('videos-container') || document.body;
+
+  // Main container (same class as local)
+  const videoContainer = document.createElement('div');
+  videoContainer.classList.add('video-container');
+
+  // --- VIDEO ELEMENT ---
+  const videoPlayer = document.createElement('video');
+  videoPlayer.className = 'local-video-player'; // SAME CLASS
+  videoPlayer.controls = false;
+  videoPlayer.playsInline = true;
+  videoPlayer.preload = 'metadata';
+
+  // IMPORTANT: stable layout
+  videoPlayer.style.width = '100%';
+  videoPlayer.style.height = '240px';
+  videoPlayer.style.background = 'black';
+
+  // Append first, then set src (important)
+  videoContainer.appendChild(videoPlayer);
+  videosContainer.appendChild(videoContainer);
+
+  videoPlayer.src = url;
+
+  // --- PLAY / PAUSE BUTTON ---
+  const playPauseBtn = document.createElement('button');
+  playPauseBtn.classList.add('video-play-pause');
+  playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+
+  function updatePlayIcon() {
+    playPauseBtn.innerHTML = videoPlayer.paused
+      ? '<i class="fas fa-play"></i>'
+      : '<i class="fas fa-pause"></i>';
+  }
+
+  playPauseBtn.addEventListener('click', () => {
+    if (videoPlayer.paused) {
+      videoPlayer.play().catch(() => {});
+    } else {
+      videoPlayer.pause();
+    }
+  });
+
+  videoPlayer.addEventListener('play', updatePlayIcon);
+  videoPlayer.addEventListener('pause', updatePlayIcon);
+
+  // --- TIMELINE ---
+  const sliderContainer = document.createElement('div');
+  sliderContainer.classList.add('slider-container');
+
+  const timelineSlider = document.createElement('input');
+  timelineSlider.type = 'range';
+  timelineSlider.classList.add('timeline-slider');
+  timelineSlider.min = 0;
+  timelineSlider.value = 0;
+
+  sliderContainer.appendChild(timelineSlider);
+
+  videoPlayer.addEventListener('loadedmetadata', () => {
+    timelineSlider.max = videoPlayer.duration || 0;
+  });
+
+  videoPlayer.addEventListener('timeupdate', () => {
+    timelineSlider.value = videoPlayer.currentTime || 0;
+  });
+
+  timelineSlider.addEventListener('input', () => {
+    videoPlayer.currentTime = timelineSlider.value;
+  });
+
+  // --- VOLUME ---
+  const volumeContainer = document.createElement('div');
+  volumeContainer.classList.add('volume-container');
+
+  const volumeSlider = document.createElement('input');
+  volumeSlider.type = 'range';
+  volumeSlider.min = 0;
+  volumeSlider.max = 1;
+  volumeSlider.step = 0.01;
+  volumeSlider.value = 0.8;
+  volumeSlider.classList.add('slider');
+
+  volumeContainer.appendChild(volumeSlider);
+
+  volumeSlider.addEventListener('input', () => {
+    videoPlayer.volume = volumeSlider.value;
+  });
+
+  // --- CONTROLS CONTAINER ---
+  const otherVideoControllersContainer = document.createElement('div');
+  otherVideoControllersContainer.classList.add('otherVideoControllersContainer');
+  otherVideoControllersContainer.appendChild(playPauseBtn);
+
+  const volumeControlerContainer = document.createElement('div');
+  volumeControlerContainer.classList.add('volumeControlerContainer');
+  volumeControlerContainer.appendChild(volumeContainer);
+
+  const videoControls = document.createElement('div');
+  videoControls.classList.add('local-video-controls');
+  videoControls.appendChild(otherVideoControllersContainer);
+  videoControls.appendChild(volumeControlerContainer);
+
+  // --- FINAL ASSEMBLY ---
+  videoContainer.appendChild(sliderContainer);
+  videoContainer.appendChild(videoControls);
+
+  // Try autoplay (gesture-safe)
+  videoPlayer.play().catch(() => {});
+}
+
+
+
+
+
+
+
+
+
+
+
+
 const fileInput = document.getElementById('file-input');
 
 async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.8) {
@@ -598,6 +737,13 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
 
     // Create the HTML5 Video element
     const videoPlayer = document.createElement('video');
+
+
+    
+
+
+
+
     videoPlayer.className = 'local-video-player';
     videoPlayer.src = url;
     videoPlayer.controls = false; // We'll use custom controls
@@ -1801,22 +1947,4 @@ initFunc().then(() => {
 
 
 
-
-
-  const Clipcheckbox = document.getElementById('trackCheckbox');
-  const clipboardTextField = document.getElementById('clipboardTextField');
-  let previousClipboard = '';
-
-  Clipcheckbox.addEventListener('change', function() {
-    if (this.checked) {
-     
-
- navigator.clipboard.writeText('').then(() => {
-        previousClipboard = '';
-        trackClipboard();
-      });
-    } else {
-      previousClipboard = '';
-    }
-  });
 
