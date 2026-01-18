@@ -372,6 +372,21 @@ async function addVideoPlayer(
 }
 
 
+function isYouTubeUrl(url) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace('www.', '');
+
+    return (
+      host === 'youtube.com' ||
+      host === 'm.youtube.com' ||
+      host === 'youtu.be'
+    );
+  } catch (e) {
+    return false; // invalid URL
+  }
+}
+
 
 
 
@@ -383,8 +398,13 @@ async function addVideo() {
     sendWebViewSignal('VIDEO_BROWSE', 'Browse')
     return; // Exit the function if the video URL is empty
   }
-
-  await filterLink(videoUrl, 60, 0)
+  if (isYouTubeUrl(videoUrl)) {
+    // handle YouTube
+    await filterLink(videoUrl, 60, 0);
+  } else {
+    // non-YouTube → local HTML5 video
+    addLocalVideoPlayer(videoUrl);
+  }
   videoUrlInput.value = '';
 }
 
@@ -571,7 +591,7 @@ function getCookie(name) {
 
 const fileInput = document.getElementById('file-input');
 
-async function addLocalVideoPlayer(url, name, timeFrame = 0, defaultVolume=0.8) {
+async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.8) {
   return new Promise((resolve, reject) => {
     // 1. Setup Containers and Video Element
     
@@ -580,7 +600,6 @@ async function addLocalVideoPlayer(url, name, timeFrame = 0, defaultVolume=0.8) 
     videoContainer.classList.add('video-container');
 
     let timeUpdateTimerId = null;
-
 
     // Create the HTML5 Video element
     const videoPlayer = document.createElement('video');
