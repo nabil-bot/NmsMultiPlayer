@@ -5,17 +5,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NMS Multiplayer</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
-
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"> -->
+   <link rel="stylesheet" href="css/all.min.css">
+  <link rel="stylesheet" href="./Styles/styles.css">
 </head>
 <body>
   <header>
-    <h1>Nms Multiplayer</h1>
+    <h1>Nms Multiplayer test</h1>
   </header>
   <div id="videos-container">
     <!-- Videos will be dynamically added here -->
   </div>
+
+  <div id="globalControls" class="global-controls-container">
+      <button id="play-all-button" class="playAll"><i class="fa-solid fa-play"></i> Play</button>
+      <button id="pause-all-button" class="pauseAll"><i class="fa-solid fa-pause"></i> Pause</button>
+    </div>
+
 
   <div id="controls">
     <div style="display: flex;  gap: 8px; justify-content: center; margin-left: 20px;">
@@ -36,12 +42,6 @@
 	  
 	  </div>
   
-  <div id="globalControls" class="global-controls-container">
-      <button id="play-all-button" class="playAll"><i class="fa-solid fa-play"></i> Play All</button>
-      <button id="pause-all-button" class="pauseAll"><i class="fa-solid fa-pause"></i> Pause All</button>
-    </div>
-
-
     <div id="pause-timer-modal" class="timer-modal">
   <div class="timer-modal-content">
     <h3>Set Pause Timer</h3>
@@ -59,13 +59,8 @@
   </div>
 </div>
   </div>
-
-    
-
     <script src="https://www.youtube.com/iframe_api"></script>
-
-    <script src="script.js"></script>
-    
+    <script src="./Scripts/script.js"></script>
 </div>
 </body>
 </html>

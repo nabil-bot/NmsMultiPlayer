@@ -480,11 +480,19 @@ function pasteFromClipboard() {
   }
 
   
+  // try {
+  //   window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
+  // } catch (error){
+  //   alert(error);
+  // }
+
   try {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'pickDocument', title: 'pickDocument' })); // for test
   } catch (error){
     alert(error);
   }
+
+
 }
 
 function setUrlTextField(url) {
@@ -1065,16 +1073,15 @@ sliderContainer.addEventListener('mousedown', () => {
     audioPlayer.currentTime += 10;
   });
   function toggleLoop() {
-    alert("i am in this func")
     audioPlayer.loop = !audioPlayer.loop;
-
     // Toggle icon and update button text based on loop state
     if (audioPlayer.loop) {
-      loopIcon.classList.remove('fa-solid fa-repeat');
-      loopIcon.classList.add('fa-redo-alt');  // Change icon to signify loop is on
+      // Remove both classes by separating them with commas
+      loopIcon.classList.remove('fa-solid', 'fa-repeat');
+      loopIcon.classList.add('fa-solid', 'fa-redo-alt'); 
     } else {
-      loopIcon.classList.remove('fa-redo-alt');
-      loopIcon.classList.add('fa-solid fa-repeat');  // Change icon to signify loop is off
+        loopIcon.classList.remove('fa-solid', 'fa-redo-alt');
+        loopIcon.classList.add('fa-solid', 'fa-repeat');
     }
   }
   const loopBtn = document.createElement('button');
@@ -1240,78 +1247,26 @@ volumeContainer.addEventListener('mousedown', () => {
   const audioFileLabel = document.createElement('label');
   audioFileLabel.textContent = name;
   audioFileLabel.classList.add('AudioFileName');
-  const removeButton = document.createElement('button');
-  // removeButton.textContent = '❌';
-
-  const RemoveIcon = document.createElement('i');
-  RemoveIcon.className = "fa-solid fa-xmark fa-xl"// Add Font Awesome classes for the menu icon
-  removeButton.appendChild(RemoveIcon);
-  removeButton.style = 'color: black'
-
-  removeButton.classList.add('remove-btn');
-  removeButton.addEventListener('click', function () {
-    audioContainer.remove();
-    fileInput.value = '';
-
-  // try {
-  //     var fileDic = getCookie("fileDic");
-  //     if (fileDic !== null) {
-  //       if (url in fileDic) {
-  //         delete fileDic[url]
-  //         if (Object.keys(fileDic).length == 0){
-  //           deleteCookie("fileDic");
-  //         }else{
-  //           setCookie("fileDic", fileDic, 10);
-  //         }
-  //       }
-  //     }
-  // } catch (error) {
-  //     alert("An error occurred: " + error);
-  // }
+  
+  
+  
+  
+  
+  
+  
+  // const removeButton = document.createElement('button');
+  // const RemoveIcon = document.createElement('i');
+  // RemoveIcon.className = "fa-solid fa-xmark fa-xl"
+  // removeButton.appendChild(RemoveIcon);
+  // removeButton.style = 'color: black'
+  // removeButton.classList.add('remove-btn');
+  // removeButton.addEventListener('click', function () {
+  //   audioContainer.remove();
+  //   fileInput.value = '';
+  // });
 
 
-  });
 
-
-  // --------------------------------------------------------
-    //   NEW INNER FUNCTION: Timer Countdown Logic
-    // --------------------------------------------------------
-    // function startCountdownTimer(totalSeconds) {
-
-    //   console.log("Starting countdown timer for", totalSeconds, "seconds.");
-    //   if (countdownIntervalId) clearInterval(countdownIntervalId);
-      
-    //   let timeLeft = totalSeconds;
-      
-    //   const updateDisplay = (time) => {
-    //     const m = Math.floor(time / 60);
-    //     const s = time % 60;
-    //     const formattedMinutes = String(m).padStart(2, "0");
-    //     const formattedSeconds = String(s).padStart(2, "0");
-    //     timerStatus.textContent = `⏸ Pauses in ${formattedMinutes}:${formattedSeconds}`;
-    //   };
-
-    //   updateDisplay(timeLeft);
-    //   timerStatus.style.display = "block";
-
-    //   countdownIntervalId = setInterval(() => {
-    //     timeLeft--;
-        
-    //     if (timeLeft < 0) {
-    //       clearInterval(countdownIntervalId);
-    //       countdownIntervalId = null;
-    //       timerStatus.textContent = "Paused.";
-    //          audioPlayer.pause(); 
-    //     pauseTimeoutId = null; 
-    //       // Hide status after a brief delay
-    //       setTimeout(() => {
-    //         timerStatus.style.display = "none";
-    //       }, 2000);
-    //     } else {
-    //       updateDisplay(timeLeft);
-    //     }
-    //   }, 1000);
-    // }
 
 
     function startCountdownTimer(totalSeconds) {
@@ -1410,40 +1365,7 @@ volumeContainer.addEventListener('mousedown', () => {
       if (pauseTimeoutId) clearTimeout(pauseTimeoutId);
       if (countdownIntervalId) clearInterval(countdownIntervalId);
 
-      // const timeInput = prompt(
-      //   `Enter the pause time in seconds (Current timer: ${pauseTimeoutId ? 'Active' : 'None'}). Use '0' to cancel.`
-      // );
 
-      // if (timeInput === null) return; // User cancelled prompt
-
-      // const timeInSeconds = parseInt(timeInput);
-
-      // if (isNaN(timeInSeconds) || timeInSeconds < 0) {
-      //   alert('Invalid input. Please enter a valid non-negative number.');
-      //   return;
-      // }
-
-      // if (timeInSeconds === 0) {
-      //   timerStatus.style.display = "none";
-      //   timerStatus.textContent = "";
-      //   alert("Pause timer cancelled.");
-      //   return;
-      // }
-
-      // // Start the visual countdown
-      // startCountdownTimer(timeInSeconds);
-
-      // // Set the actual pause action
-      // pauseTimeoutId = setTimeout(() => {
-      //   audioPlayer.pause(); 
-      //   pauseTimeoutId = null; // Clear reference after execution
-      // }, timeInSeconds * 1000); 
-
-      // alert(`Player will pause in ${timeInSeconds} seconds.`);
-    
-    
-
-//       function pauseVideo() {
 
   const modal = document.getElementById("pause-timer-modal");
   const minInput = document.getElementById("timer-min");
@@ -1485,10 +1407,6 @@ volumeContainer.addEventListener('mousedown', () => {
 
 
 // }
-    
-    
-    
-    
     }
 
 
@@ -1509,7 +1427,8 @@ menu.style.display = 'none'; // Hide the menu initially
 // Add menu items
 const menuItems = [
   { text: 'Set Pause Timer', iconClass: 'fas fa-pause' },
-  { text: 'Copy Link', iconClass: 'fas fa-copy' }
+  { text: 'Copy Link', iconClass: 'fas fa-copy' },
+  {text: 'Remove', iconClass: 'fa-solid fa-xmark fa-xl'},
 ];
 menuItems.forEach(item => {
   const menuItem = document.createElement('div');
@@ -1527,37 +1446,13 @@ menuItems.forEach(item => {
   // Add click functionality
   menuItem.addEventListener('click', () => {
     // alert(`You clicked: ${item.text}`);
-    if (item.text == 'Set Pause Timer'){
-  //     const timeInSeconds = prompt('Enter the time in seconds to pause:');
-
-  // // Validate the input
-  // if (timeInSeconds && !isNaN(timeInSeconds) && timeInSeconds > 0) {
-    
-  //   setTimeout(() => {
-  //     audioPlayer.pause(); 
-  //     }, timeInSeconds * 1000); 
-    
-  //   alert(`Player will pause in ${timeInSeconds} seconds.`);
-    
-    
-  // } else {
-  //   alert('Invalid input. Please enter a valid number.');
-  // }
-    
-  setPauseTimer();
-
-
-
-
-
-
-
-
-
-
-
-
-}
+    if (item.text == 'Set Pause Timer'){ 
+      setPauseTimer();
+    }
+    else if (item.text == 'Remove'){ 
+      audioContainer.remove();
+      fileInput.value = '';
+    }
 
     menu.style.display = 'none'; // Hide the menu after clicking
   });
@@ -1597,7 +1492,8 @@ menu.addEventListener('click', (e) => {
   removeContainer.classList.add('remove-container');
   removeContainer.appendChild(MenuButton)
   removeContainer.appendChild(audioFileLabel)
-  removeContainer.appendChild(removeButton)
+  // removeContainer.appendChild(removeButton)
+  
   audioContainer.appendChild(removeContainer);
   audioContainer.appendChild(sliderContainer);
   audioContainer.appendChild(audioPlayer);
@@ -1774,14 +1670,6 @@ fileInput.addEventListener('change', function(event) {
     for (const file of files) {
       const url = URL.createObjectURL(file);
       
-      try {
-        window.ReactNativeWebView.postMessage(JSON.stringify({ 
-          type: 'SELECTED_FILE_URL', 
-          state: url 
-        }));
-      } catch (error) {
-        console.log(error);
-      }
 
       const name = file.name;
       if (file.type.startsWith('audio/')) {
