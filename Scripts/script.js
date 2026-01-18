@@ -520,17 +520,12 @@ function pasteFromClipboard() {
   }
 
   
-  // try {
-  //   window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
-  // } catch (error){
-  //   alert(error);
-  // }
-
   try {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'pickDocument', title: 'pickDocument' })); // for test
+    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
   } catch (error){
     alert(error);
   }
+
 
 
 }
