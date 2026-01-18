@@ -71,24 +71,23 @@ h1 {
   padding-left: 8%;
   padding-right: 8%;
   padding-bottom: 6%;
-  gap: 5%;
-
+  gap: 2%;
 }
 
 
 
 .playAll, .pauseAll {
     /* 1. Sizing and Layout (Mobile-Friendly Touch Targets) */
-    padding: 12px 24px;
-    margin: 0 8px; /* Space between the two buttons */
-    min-width: 140px;
-    min-height: 48px; /* Recommended minimum touch target size */
+    padding: 8px 14px;
+    margin: 0 6px; /* Space between the two buttons */
+    min-width: 100px;
+    min-height: 38px; /* Recommended minimum touch target size */
     
     /* 2. Typography and Appearance */
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 600;
     border: none;
-    border-radius: 24px; /* Pill shape for modern look */
+    border-radius: 16px; /* Pill shape for modern look */
     cursor: pointer;
     letter-spacing: 0.5px;
     
@@ -161,7 +160,8 @@ h1 {
 .video-wrapper {
   /* margin: 2%; */
   border: 1px solid #ccc;
-  padding: 8px;
+  /* padding: 8px;  */
+
   border-radius: 8px;
   box-shadow: 1px 6px 6px rgba(0, 0, 0, 0.1); 
   background-color: #f1f2f4;
@@ -228,10 +228,6 @@ h1 {
 
   .video-wrapper {
     width: 100%;
-    padding-left: 2%;
-    padding-right: 2%;
-    padding-bottom: 3%;
-
   }
 
   #videos-container {

@@ -429,24 +429,44 @@ function removeVideo(videoWrapper, videoUrl) {
   videoWrapper.remove();
   
 }
-function getVideoId(url) {
-  var regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/;
+// function getVideoId(url) {
+//   var regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/;
   
-  var match = url.match(regExp);
+//   var match = url.match(regExp);
 
-  if (match && match[1]) {
-    return match[1];
-  } else {
-    regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
-    match = url.match(regExp);
-    if (match && match[1]) {
-      return match[1];
-    } else {
-      // alert("Invalid url")
-      return null;
+//   if (match && match[1]) {
+//     return match[1];
+//   } else {
+//     regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
+//     match = url.match(regExp);
+//     if (match && match[1]) {
+//       return match[1];
+//     } else {
+//       // alert("Invalid url")
+//       return null;
+//     }
+//   }
+// }
+
+function getVideoId(url) {
+  try {
+    const u = new URL(url);
+
+    if (u.hostname === "youtu.be") {
+      return u.pathname.slice(1);
     }
+
+    if (u.pathname.startsWith("/shorts/")) {
+      return u.pathname.split("/")[2];
+    }
+
+    return u.searchParams.get("v");
+  } catch {
+    return null;
   }
 }
+
+
 function setVolume(videoWrapper, volume) {
   const iframe = videoWrapper.querySelector('iframe');
   const videoId = iframe.src.split('/').pop().split('?')[0];
@@ -1396,10 +1416,6 @@ volumeContainer.addEventListener('mousedown', () => {
 
     close();
 
-    // const player = players.find(p => p.getIframe() === iframe);
-    // if (!player) return;
-
-    // Start countdown
     startCountdownTimer(total);
 
     // setTimeout(() => player.pauseVideo(), total * 1000);
@@ -1674,7 +1690,7 @@ fileInput.addEventListener('change', function(event) {
       const name = file.name;
       if (file.type.startsWith('audio/')) {
         let timeFrame = 0;
-        let volume = 0;
+        let volume = 0.8;
 
         const fileDic = getCookie("fileDic");
         if (fileDic != null) {
