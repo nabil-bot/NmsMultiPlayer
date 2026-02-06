@@ -1,0 +1,72 @@
+:root {
+  /* Common Spacing & Typography */
+  --font-main: Google Sans,'Inter', system-ui, sans-serif;
+  --radius-md: 8px;
+  --shadow-standard: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+  --bg-main: #1f1f1f;
+  --bg-surface: #5f6368;
+  --text-bold: #e8eae1;
+  --text-subtle: #bfbfbf;
+  --primary: #303134;
+  --accent: #28292a;
+  --border: #e2e8f0;
+
+  --click-Primary: #a8c7fa;
+
+
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem;  /* 8px */
+  --space-md: 1rem;    /* 16px */
+  --space-lg: 1.5rem;  /* 24px */
+  --space-xl: 2rem;    /* 32px */
+  --space-2xl: 3rem;   /* 48px */
+
+
+    /* Font Size Scale - Mobile Optimized */
+  --fs-xs: 0.75rem;   /* 12px - Captions / Small labels */
+  --fs-sm: 0.875rem;  /* 14px - Secondary text / Buttons */
+  --fs-base: 1rem;    /* 16px - Standard body text (Standard) */
+  --fs-md: 1.25rem;   /* 20px - Sub-headings / Large UI text */
+  --fs-lg: 1.5rem;    /* 24px - Small titles / Section headers */
+  --fs-xl: 1.875rem;  /* 30px - Main Page Titles */
+  
+  /* Font Weight (Optional but helpful) */
+  --fw-normal: 400;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+}
+
+/* Theme 1: Classic Pro (Light Mode) - Professional & Clean */
+[data-theme="light"] {
+  --bg-main: #f8fafc;
+  --bg-surface: #ffffff;
+  --text-bold: #1e293b;
+  --text-subtle: #64748b;
+  --primary: #2563eb;
+  --accent: #7c3aed;
+  --border: #e2e8f0;
+}
+
+/* Theme 2: Deep Sea (Dark Mode) - Easy on the eyes */
+[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --bg-surface: #1e293b;
+  --text-bold: #f8fafc;
+  --text-subtle: #94a3b8;
+  --primary: #38bdf8;
+  --accent: #fbbf24;
+  --border: #334155;
+}
+
+/* Theme 3: Forest/Nature (Earth Tones) - Unique Personality */
+[data-theme="forest"] {
+  --bg-main: #f0f4f0;
+  --bg-surface: #ffffff;
+  --text-bold: #1a2e1a;
+  --text-subtle: #4a5d4a;
+  --primary: #15803d;
+  --accent: #d97706;
+  --border: #d1d5db;
+}

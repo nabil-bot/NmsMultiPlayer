@@ -7,7 +7,9 @@
   <title>NMS Multiplayer</title>
   <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"> -->
    <link rel="stylesheet" href="css/all.min.css">
+   <link rel="stylesheet" href="./Styles/variables.css">
   <link rel="stylesheet" href="./Styles/styles.css">
+  <link rel="stylesheet" href="./Styles/initVisible.css">
 </head>
 <body>
   <header>
@@ -16,24 +18,25 @@
   <div id="videos-container">
     <!-- Videos will be dynamically added here -->
   </div>
-
   <div id="globalControls" class="global-controls-container">
       <button id="play-all-button" class="playAll"><i class="fa-solid fa-play"></i> Play</button>
       <button id="pause-all-button" class="pauseAll"><i class="fa-solid fa-pause"></i> Pause</button>
       <button id="clear-all-button" class="pauseAll"><i class="fa-solid fa-trash"></i> Clear</button>
     </div>
-
-
   <div id="controls">
-    <div style="display: flex;  gap: 8px; justify-content: center; margin-left: 20px;">
-      <input type="text" id="video-url" placeholder="Enter Video URL">
-      <button id="clear-button" style="padding: 3px; background: transparent; color: #333; width: 30px; padding-right: 10px; margin-right: 20px; font-size: 24px;"><i class="fa-regular fa-circle-xmark"></i></button>
+    <div class="input-area">
+      <button id="paste-btn" class="pasteBtn"><i class="fa-regular fa-paste"></i></button>
+      <input type="text" id="video-url" class="inputField" placeholder="Enter Video URL">
+      <button id="clear-button" class="clearBtn"><i class="fa-regular fa-circle-xmark"></i></button>
     </div>
-    <button id="paste-btn"><i class="fa-regular fa-paste"></i> Paste</button>
-    <button id="add-video-btn"><i class="fa-solid fa-plus"></i> Add Video</button>
+    <div class="submit-area">
+      <button id="add-video-btn" class="addBtn"><i class="fa-solid fa-plus"></i> Add Video</button>
+      <button id="browse-btn" class="browseBtn"><i class="fa-brands fa-chrome"></i> Browse</button>
+    </div>
   </div>
-  <div id="goblaControls">
 
+
+  <div id="goblaControls">
   <div class="group-container">
     
 	  <input type="file" id="file-input" class="hidden-input" accept="audio/*,video/*" multiple>
@@ -46,13 +49,10 @@
     <div id="pause-timer-modal" class="timer-modal">
   <div class="timer-modal-content">
     <h3>Set Pause Timer</h3>
-
     <label>Minutes:</label>
     <input type="number" id="timer-min" min="0" value="0">
-
     <label>Seconds:</label>
     <input type="number" id="timer-sec" min="0" value="0">
-
     <div class="timer-buttons">
       <button id="timer-cancel">Cancel</button>
       <button id="timer-set">Set Timer</button>
@@ -65,4 +65,3 @@
 </div>
 </body>
 </html>
-

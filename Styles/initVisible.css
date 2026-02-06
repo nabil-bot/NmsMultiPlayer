@@ -1,0 +1,98 @@
+.input-area, .submit-area{
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin: var(--space-md);
+}
+
+.pasteBtn, .inputField, .clearBtn, .addBtn, .browseBtn{
+    border: none;
+    padding: var(--space-xs);
+}
+.input-area {
+  /* The "Google Look" Box */
+  background-color: var(--bg-surface); /* Uses your theme variable */
+  border-radius: 24px;       /* High value for pill shape */
+  padding: 6px 15px;         /* Inner breathing room */
+  /* Sizing */
+  width: 65%;    /* Google's exact search bar width */
+  margin: var(--space-md) auto; /* Centers the container itself */
+  transition: box-shadow 0.2s;
+}
+
+/* When the input inside is clicked, change the wrapper's background */
+.input-area:focus-within {
+  background-color: var(--primary); 
+  /* Optional: adds a nice smooth transition */
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect like Google */
+.input-area:focus-within {
+  box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+}
+
+.inputField {
+  flex: 1;                   /* Takes up all available middle space */
+  border: none;
+  background: transparent;
+  outline: none;             /* Removes the blue ring on click */
+  padding: var(--space-sm);
+  color: var(--text-bold);
+  font-size: 1rem;
+}
+
+.pasteBtn, .clearBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-subtle);
+  display: flex;
+  align-items: center;
+  padding: var(--space-xs);
+  transition: color 0.2s;
+}
+
+.pasteBtn:hover, .clearBtn:hover {
+  color: var(--primary);     /* Changes icon color on hover */
+}
+
+
+.addBtn, .browseBtn{
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    color: var(--text-bold);
+    font-family: Google Sans, Arial, sans-serif;
+    font-optical-sizing: none;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-normal);
+    margin: 11px 4px;
+    padding: 0 16px;
+    height: 36px;
+    min-width: 54px;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+/* 1. When focused (via Tab key or Click) */
+.addBtn:focus, .browseBtn:focus {
+  border: 1px solid #5f6368;
+  /* outline-offset: 2px; */
+  background-color: var(--bg-surface-focus);
+}
+
+/* 2. When clicked/pressed (The "Active" state) */
+.addBtn:active, .browseBtn:active {
+  transform: scale(0.95); /* Shrinks slightly for a "button press" feel */
+  filter: brightness(0.9); /* Slightly darkens the color */
+}
+
+
+.group-container {
+  margin-top: 12px;
+  padding-top: 20px;
+  border-radius: 5px;
+  padding: 10px;
+}
