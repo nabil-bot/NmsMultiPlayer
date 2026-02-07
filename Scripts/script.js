@@ -1,3 +1,8 @@
+
+
+
+
+
 let videoCount = 0;
 let players = [];
 const volume = 50;
@@ -215,7 +220,7 @@ async function addVideoPlayer(
   timerStatus.className = "timer-status";
   timerStatus.style.marginLeft = "10px";
   timerStatus.style.fontSize = "12px";
-  timerStatus.style.color = "#333";
+  timerStatus.style.color = "var(--text-bold)";
   timerStatus.style.display = "none"; // hidden unless active
   videoControlsWrapper.appendChild(timerStatus);
 
@@ -230,7 +235,6 @@ async function addVideoPlayer(
   removeIcon.className = "fa-solid fa-xmark fa-xl";
   removeBtn.appendChild(removeIcon);
   removeBtn.className = "remove-btn";
-  removeIcon.style.color = "black";
 
   removeBtn.onclick = () => {
     removeVideo(videoWrapper, videoUrl);
@@ -409,9 +413,12 @@ async function addVideo() {
   videoUrlInput.value = '';
 }
 
+function OpenBrowser() {
+  sendWebViewSignal('VIDEO_BROWSE', 'Browse')
+}
+
 async function addVideoFromNative(videoUrl) {
   await filterLink(videoUrl, 70, 0)
-  // videoUrlInput.value = '';
 }
 
 
@@ -536,11 +543,12 @@ function setUrlTextField(url) {
 }
 
 document.getElementById('add-video-btn').addEventListener('click', addVideo);
+document.getElementById('browse-btn').addEventListener('click', OpenBrowser);
 document.getElementById('paste-btn').addEventListener('click', pasteFromClipboard);
+document.getElementById('clear-all-button').addEventListener('click', clearAll);
 
 
 
-// Function to send signal to React Native WebView
 function sendWebViewSignal(type_, title_) {
   try {
     window.ReactNativeWebView.postMessage(JSON.stringify({ type: type_, title: title_ }));
@@ -874,7 +882,8 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     volumeContainer.classList.add('volume-container');
     const speakerIcon = document.createElement('i');
     speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
-    speakerIcon.style.color = 'gray';
+    speakerIcon.style.color = 'var(--bg-surface)';
+    speakerIcon.style.paddingRight = 'var(--space-sm)';
     volumeContainer.appendChild(speakerIcon);
 
     const volumeSlider = document.createElement('input');
@@ -1038,7 +1047,7 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     const RemoveIcon = document.createElement('i');
     RemoveIcon.className = "fa-solid fa-xmark fa-xl";
     removeButton.appendChild(RemoveIcon);
-    removeButton.style = 'color: black';
+    removeButton.style = 'var(--text-subtle)';
     
     removeButton.classList.add('remove-btn');
     
@@ -1294,7 +1303,8 @@ sliderContainer.addEventListener('mousedown', () => {
   volumeContainer.classList.add('volume-container');
   const speakerIcon = document.createElement('i');
   speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
-  speakerIcon.style.color = 'gray';
+  speakerIcon.style.color = 'var(--bg-surface)';
+  speakerIcon.style.paddingRight = 'var(--space-sm)';
   volumeContainer.appendChild(speakerIcon);
   const volumeSlider = document.createElement('input');
   volumeSlider.type = 'range';
@@ -1837,7 +1847,18 @@ function deleteCookie(name) {
   document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
+function clearAllCookies() {
+  const cookies = document.cookie.split(";");
 
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf("=");
+    
+    const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+  
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+  }
+}
 
 fileInput.addEventListener('change', function(event) {
   const files = event.target.files;
@@ -1948,3 +1969,17 @@ initFunc().then(() => {
 
 
 
+
+
+function clearAll() {
+  const isConfirmed = confirm("Are you sure you want to clear everything?");
+  if (isConfirmed) {
+    // Put your logic to clear the inputs/data here
+    const container = document.getElementById('videos-container');
+    container.innerHTML = '';
+    clearAllCookies()
+  } else {
+    // User clicked 'Cancel', nothing happens
+    console.log("Action cancelled.");
+  }
+}

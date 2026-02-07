@@ -49,7 +49,7 @@
   color: var(--text-subtle);
   display: flex;
   align-items: center;
-  padding: var(--space-xs);
+  padding: var(--space-sm);
   transition: color 0.2s;
 }
 
