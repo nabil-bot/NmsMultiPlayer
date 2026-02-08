@@ -385,11 +385,14 @@ function isYouTubeUrl(url) {
 }
 
 
-
-
 async function addVideo() {
   const videoUrlInput = document.getElementById('video-url');
   let videoUrl = videoUrlInput.value.trim();
+
+  if (videoUrl.includes(",")) {
+    filterLink(videoUrl, 60, 0)
+    return
+  }
 
   if (!videoUrl) {
     sendWebViewSignal('VIDEO_BROWSE', 'Browse')
