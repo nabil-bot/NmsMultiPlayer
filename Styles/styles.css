@@ -309,13 +309,8 @@ body {
 #goblaControls label {
   margin-left: 5px;
   font-size: 16px;
-  color: #333;
-  
+  color: #333; 
 }
-
-
-
-
 
 .video-speed-select {
   width: 50px;
@@ -343,19 +338,23 @@ body {
   flex-grow: 1;
   margin: 2px;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 5px 6px;
   background-color: var(--primary);
-  color: var(--text-subtle)
+  color: var(--text-subtle);
+  border: none;
+  max-width: var(--space-lg);
 }
 
 .audio-play-pause, .video-play-pause{
-  padding: 6px 12px;
+padding: 6px 12px;
 }
+
 
 
 .playlistSerial{
   color: var(--text-subtle);
   font-size: var(--fs-sm);
+  padding: 6px;
 }
 
 /* Style for the audio element */

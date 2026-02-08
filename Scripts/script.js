@@ -1782,8 +1782,13 @@ pauseAllButton.addEventListener('click', handlePauseAll);
 async function filterLink(videoUrl, volume, timeFrame) {
   return new Promise((resolve, reject) => {
     if (videoUrl.includes(",")){
+      alert("comma found in the url")
       let splitedUrls = videoUrl.split(", ")
-      addVideoPlayer(splitedUrls[0], volume, speed, true, splitedUrls, timeFrame,0, true); // No need to pass isPlaylist=true
+      try{
+        addVideoPlayer(splitedUrls[0], volume, speed, true, splitedUrls, timeFrame,0, true); // No need to pass isPlaylist=true
+      } catch (error){
+        alert(error)
+      }
       alert("in filterlink");
       let customListDic = {}
       customListDic["urls"] = splitedUrls
@@ -1903,8 +1908,12 @@ async function initFunc() {
   var customListDic = getCookie("customListDic");
 
   if (customListDic !== null) {
-    alert("play list was saved!")
+    alert("there was a list saved!!")
+    try{
     addVideoPlayer(customListDic["urls"][customListDic["currentIndex"]], 80, 1, true, customListDic["urls"], 0, customListDic["currentIndex"], customPlaylist=true); // No need to pass isPlaylist=true
+    } catch (error){
+      alert(error)
+    }
   };
 
   }catch (error) {
