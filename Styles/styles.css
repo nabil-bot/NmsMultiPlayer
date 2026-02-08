@@ -338,11 +338,12 @@ body {
   flex-grow: 1;
   margin: 2px;
   border-radius: 5px;
-  padding: 5px 6px;
+  /* padding: 5px 6px; */
+  padding: 6px;
   background-color: var(--primary);
   color: var(--text-subtle);
   border: none;
-  max-width: var(--space-lg);
+  max-width: 60px;
 }
 
 .audio-play-pause, .video-play-pause{

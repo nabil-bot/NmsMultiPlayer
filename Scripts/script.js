@@ -384,7 +384,6 @@ function isYouTubeUrl(url) {
   }
 }
 
-
 async function addVideo() {
   const videoUrlInput = document.getElementById('video-url');
   let videoUrl = videoUrlInput.value.trim();
