@@ -206,9 +206,10 @@ async function addVideoPlayer(
 
     label = document.createElement("label");
     label.textContent = `${currentPlaylistIndex + 1}/${playlistVideos.length}`;
-    label.style.fontSize = "14px";
+    label.className = 'playlistSerial'
 
-    videoControlsWrapper.append(prevBtn, nextBtn, label);
+    videoControlsWrapper.append(prevBtn, label, nextBtn);
+
   }
 
   
@@ -223,10 +224,6 @@ async function addVideoPlayer(
   timerStatus.style.color = "var(--text-bold)";
   timerStatus.style.display = "none"; // hidden unless active
   videoControlsWrapper.appendChild(timerStatus);
-
-  
-
-
 
   
   // Remove button
@@ -262,7 +259,7 @@ async function addVideoPlayer(
   if (!customPlaylist) {
     const dic = getCookie("urlDic") || {};
     dic[videoUrl] = dic[videoUrl] || { volume, timeFrame };
-    setCookie("urlDic", dic, 10);
+    setCookie("urlDic", dic, 14);
   }
 
   // ------------------------------
@@ -325,24 +322,20 @@ async function addVideoPlayer(
     iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
     initializeYouTubeAPI(iframe, volumeSlider.value, 0);
 
-    if (customPlaylist) {
-      const dic = getCookie("customListDic") || {};
-      dic.currentIndex = currentPlaylistIndex;
-      setCookie("customListDic", dic, 10);
-    }
+    // if (customPlaylist) {
+    //   const dic = getCookie("customListDic") || {};
+    //   dic.currentIndex = currentPlaylistIndex;
+    //   setCookie("customListDic", dic, 14);
+    // }
   }
 
   function pauseVideo() {
-
   const modal = document.getElementById("pause-timer-modal");
   const minInput = document.getElementById("timer-min");
   const secInput = document.getElementById("timer-sec");
-
   modal.style.display = "flex";
-
   const cancel = document.getElementById("timer-cancel");
   const set = document.getElementById("timer-set");
-
   function close() {
     modal.style.display = "none";
     cancel.onclick = null;
@@ -457,24 +450,6 @@ function removeVideo(videoWrapper, videoUrl) {
   videoWrapper.remove();
   
 }
-// function getVideoId(url) {
-//   var regExp = /^(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/live\/)([a-zA-Z0-9_-]{11})/;
-  
-//   var match = url.match(regExp);
-
-//   if (match && match[1]) {
-//     return match[1];
-//   } else {
-//     regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
-//     match = url.match(regExp);
-//     if (match && match[1]) {
-//       return match[1];
-//     } else {
-//       // alert("Invalid url")
-//       return null;
-//     }
-//   }
-// }
 
 function getVideoId(url) {
   try {
@@ -533,9 +508,6 @@ function pasteFromClipboard() {
   } catch (error){
     alert(error);
   }
-
-
-
 }
 
 function setUrlTextField(url) {
@@ -1803,13 +1775,6 @@ playAllButton.addEventListener('click', handlePlayAll);
 
 // When the 'pauseAllButton' is clicked, execute the 'handlePauseAll' function
 pauseAllButton.addEventListener('click', handlePauseAll);
-  
-
-
-
-
-
-
 
 
 
@@ -1819,16 +1784,12 @@ async function filterLink(videoUrl, volume, timeFrame) {
     if (videoUrl.includes(",")){
       let splitedUrls = videoUrl.split(", ")
       addVideoPlayer(splitedUrls[0], volume, speed, true, splitedUrls, timeFrame,0, true); // No need to pass isPlaylist=true
-      
+      alert("in filterlink");
       let customListDic = {}
       customListDic["urls"] = splitedUrls
       customListDic["currentIndex"] = 0
       customListDic["volume"] = 100
-
-
-      setCookie("customListDic", customListDic, 10);
-      
-
+      setCookie("customListDic", customListDic, 14);
       resolve();
     }
     else {
@@ -1929,8 +1890,8 @@ function keepLastFiveElements(obj) {
 async function initFunc() {
   try{
   var urlDic = getCookie("urlDic");
-    if (urlDic !== null) {
-      for (let url in urlDic) {
+  if (urlDic !== null) {
+    for (let url in urlDic) {
         try {
           await filterLink(url, urlDic[url]["volume"], urlDic[url]["timeFrame"]); 
         } catch (error) {
@@ -1938,24 +1899,14 @@ async function initFunc() {
         }
       }
     };
-    // var fileDic = getCookie("fileDic");
-    // if (fileDic != null) {
-    //   for (let url in fileDic){
-    //     await addAudioPlayer(url, fileDic[url]["name"], fileDic[url]["timeFrame"], fileDic[url]["volume"]);
+  
+  var customListDic = getCookie("customListDic");
 
-    //   }
-    // }
+  if (customListDic !== null) {
+    alert("play list was saved!")
+    addVideoPlayer(customListDic["urls"][customListDic["currentIndex"]], 80, 1, true, customListDic["urls"], 0, customListDic["currentIndex"], customPlaylist=true); // No need to pass isPlaylist=true
+  };
 
-    var customListDic = getCookie("customListDic");
-    if (customListDic !== null) {
-      addVideoPlayer(customListDic["urls"][customListDic["currentIndex"]], volume, speed, true, customListDic["urls"], 0, customListDic["currentIndex"], customPlaylist=true); // No need to pass isPlaylist=true
-      
-      // let customListDic = {}
-      // customListDic["urls"] = splitedUrls
-      // customListDic["currentIndex"] = 0
-      // customListDic["volume"] = 100
-      
-    };
   }catch (error) {
     console.error('An error occurred during initialization:', error);
   }

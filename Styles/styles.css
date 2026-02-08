@@ -339,16 +339,23 @@ body {
   background-color: #f0f0f0; /* Change background color on hover */
 }
 
-
-
 .next-btn, .previous-btn{
   flex-grow: 1;
-  margin: 3px;
-  padding: 6px 12px;
+  margin: 2px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  background-color: var(--primary);
+  color: var(--text-subtle)
 }
 
 .audio-play-pause, .video-play-pause{
   padding: 6px 12px;
+}
+
+
+.playlistSerial{
+  color: var(--text-subtle);
+  font-size: var(--fs-sm);
 }
 
 /* Style for the audio element */
