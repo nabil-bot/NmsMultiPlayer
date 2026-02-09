@@ -588,8 +588,11 @@ select {
   padding: 10px 15px;
   cursor: pointer;
   font-size: 14px;
-  color: #333;
+  /* color: #333; */
+  background-color: var(--primary);
+  color: var(--text-bold);
   text-align: left;
+  border: none;
 }
 
 .menu-item:hover {

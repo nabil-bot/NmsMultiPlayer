@@ -1,8 +1,3 @@
-
-
-
-
-
 let videoCount = 0;
 let players = [];
 const volume = 50;
@@ -46,10 +41,6 @@ function startCountdownTimer(wrapper, seconds) {
     }
   };
 }
-
-
-
-
 
 async function addVideoPlayer(
   videoUrl,
@@ -116,11 +107,20 @@ async function addVideoPlayer(
   // Save and apply volume
   volumeSlider.addEventListener("input", () => {
     setVolume(videoWrapper, volumeSlider.value);
-    const dic = getCookie("urlDic");
-    if (dic && dic[videoUrl]) {
-      dic[videoUrl].volume = volumeSlider.value;
-      setCookie("urlDic", dic, 10);
+    if (customPlaylist){
+      const dic = getCookie("customListDic") || {};
+      dic.volume = volumeSlider.value;
+      setCookie("customListDic", dic, 14);
+    }else{
+      const dic = getCookie("urlDic");
+      if (dic && dic[videoUrl]) {
+        dic[videoUrl].volume = volumeSlider.value;
+        setCookie("urlDic", dic, 10);
+      }
     }
+    
+    
+    
   });
 
   speakerIcon.addEventListener("click", () => {
@@ -312,21 +312,18 @@ async function addVideoPlayer(
     currentPlaylistIndex =
       (currentPlaylistIndex + dir + playlistVideos.length) %
       playlistVideos.length;
-
     if (label)
       label.textContent = `${currentPlaylistIndex + 1}/${playlistVideos.length}`;
-
     const newUrl = playlistVideos[currentPlaylistIndex];
     const newId = getVideoId(newUrl);
 
     iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
     initializeYouTubeAPI(iframe, volumeSlider.value, 0);
-
-    // if (customPlaylist) {
-    //   const dic = getCookie("customListDic") || {};
-    //   dic.currentIndex = currentPlaylistIndex;
-    //   setCookie("customListDic", dic, 14);
-    // }
+    if (customPlaylist) {
+      const dic = getCookie("customListDic") || {};
+      dic.currentIndex = currentPlaylistIndex;
+      setCookie("customListDic", dic, 14);
+    }
   }
 
   function pauseVideo() {
@@ -583,6 +580,9 @@ function getCookie(name) {
 //   });
 // }
 
+
+
+
 function addOnlineVideoPlayer(url) {
   const videosContainer = document.getElementById('videos-container') || document.body;
 
@@ -719,12 +719,6 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
 
     // Create the HTML5 Video element
     const videoPlayer = document.createElement('video');
-
-
-    
-
-
-
 
     videoPlayer.className = 'local-video-player';
     videoPlayer.src = url;
@@ -1772,26 +1766,20 @@ function handlePauseAll() {
   }
 }
 
-
 playAllButton.addEventListener('click', handlePlayAll);
-
 // When the 'pauseAllButton' is clicked, execute the 'handlePauseAll' function
 pauseAllButton.addEventListener('click', handlePauseAll);
-
-
 
 
 async function filterLink(videoUrl, volume, timeFrame) {
   return new Promise((resolve, reject) => {
     if (videoUrl.includes(",")){
-      alert("comma found in the url")
-      let splitedUrls = videoUrl.split(", ")
+      let splitedUrls = videoUrl.split(",")
       try{
         addVideoPlayer(splitedUrls[0], volume, speed, true, splitedUrls, timeFrame,0, true); // No need to pass isPlaylist=true
       } catch (error){
         alert(error)
       }
-      alert("in filterlink");
       let customListDic = {}
       customListDic["urls"] = splitedUrls
       customListDic["currentIndex"] = 0
@@ -1910,9 +1898,8 @@ async function initFunc() {
   var customListDic = getCookie("customListDic");
 
   if (customListDic !== null) {
-    alert("there was a list saved!!")
     try{
-    addVideoPlayer(customListDic["urls"][customListDic["currentIndex"]], 80, 1, true, customListDic["urls"], 0, customListDic["currentIndex"], customPlaylist=true); // No need to pass isPlaylist=true
+    addVideoPlayer(customListDic["urls"][customListDic["currentIndex"]], customListDic["volume"], 1, true, customListDic["urls"], 0, customListDic["currentIndex"], customPlaylist=true); // No need to pass isPlaylist=true
     } catch (error){
       alert(error)
     }
@@ -1929,10 +1916,6 @@ initFunc().then(() => {
 });
 
 
-
-
-
-
 function clearAll() {
   const isConfirmed = confirm("Are you sure you want to clear everything?");
   if (isConfirmed) {
@@ -1945,3 +1928,6 @@ function clearAll() {
     console.log("Action cancelled.");
   }
 }
+
+
+
