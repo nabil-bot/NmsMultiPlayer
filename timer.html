@@ -1,91 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern High-Roller Timer</title>
-    
+    <title>Facebook Video Embed</title>
 </head>
 <body>
 
-<div class="picker-container">
-    <h2 style="font-weight: 400; font-size: 1.2rem; color: #666; margin-top: 0;">Set Duration</h2>
-    
-    <div class="roller-wrapper">
-        <div class="selection-overlay"></div>
-        
-        <div class="label-container">
-            <span class="stationary-label">min</span>
-            <span class="stationary-label">sec</span>
-        </div>
-        
-        <div class="roller" id="min-roller">
-            <ul class="roller-list" id="min-list"></ul>
-        </div>
-
-        <div class="roller" id="sec-roller">
-            <ul class="roller-list" id="sec-list"></ul>
-        </div>
+    <div 
+        class="fb-video" 
+        data-href="https://www.facebook.com/reel/912926467822097/?referral_source=native_watch_in_feed_unit" 
+        data-width="500" 
+        data-show-text="false">
     </div>
 
-    <div class="actions">
-        <button class="btn-cancel" onclick="resetTimer()">Cancel</button>
-        <button class="btn-set" onclick="setTimer()">Set</button>
-    </div>
-</div>
+    <div id="fb-root"></div>
+    <script async defer src="https://connect.facebook.net/en_US/sdk.js"></script>
 
-<input type="number" id="timer-min" value="0">
-<input type="number" id="timer-sec" value="0">
-
-<script>
-    const minList = document.getElementById('min-list');
-    const secList = document.getElementById('sec-list');
-    const minInput = document.getElementById('timer-min');
-    const secInput = document.getElementById('timer-sec');
-
-    function populate(list, max) {
-        let items = '';
-        for (let i = 0; i <= max; i++) {
-            items += `<li class="roller-item">${i}</li>`;
-        }
-        list.innerHTML = items;
-    }
-
-    populate(minList, 999);
-    populate(secList, 59);
-
-    function setupRoller(id, hiddenInput) {
-        const roller = document.getElementById(id);
-        const itemHeight = 70; // Matches CSS --item-height
-
-        roller.addEventListener('scroll', () => {
-            const index = Math.round(roller.scrollTop / itemHeight);
-            const items = roller.querySelectorAll('.roller-item');
-            
-            if(items[index]) {
-                items.forEach(item => item.classList.remove('active'));
-                items[index].classList.add('active');
-                hiddenInput.value = index;
-            }
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '{your-app-id}', // You can leave this blank for simple embeds
+          xfbml      : true,
+          version    : 'v18.0'
         });
 
-        // Initialize first active
-        setTimeout(() => roller.dispatchEvent(new Event('scroll')), 100);
-    }
-
-    setupRoller('min-roller', minInput);
-    setupRoller('sec-roller', secInput);
-
-    function setTimer() {
-        console.log(`Saved values: ${minInput.value}m ${secInput.value}s`);
-        alert(`Timer set for ${minInput.value} minutes and ${secInput.value} seconds.`);
-    }
-
-    function resetTimer() {
-        document.getElementById('min-roller').scrollTo({top: 0, behavior: 'smooth'});
-        document.getElementById('sec-roller').scrollTo({top: 0, behavior: 'smooth'});
-    }
-</script>
+        // Optional: Subscribe to events
+        FB.Event.subscribe('xfbml.ready', function(msg) {
+          if (msg.type === 'video') {
+            console.log('Video player is ready: ' + msg.id);
+          }
+        });
+      };
+    </script>
 
 </body>
 </html>

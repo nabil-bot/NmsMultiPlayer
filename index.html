@@ -5,16 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NMS Multiplayer</title>
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"> -->
    <link rel="stylesheet" href="css/all.min.css">
    <link rel="stylesheet" href="./Styles/variables.css">
   <link rel="stylesheet" href="./Styles/styles.css">
   <link rel="stylesheet" href="./Styles/initVisible.css">
   <link rel="stylesheet" href="./Styles/audioPlayer.css">
   <link rel="stylesheet" href="./Styles/timerPicker.css">
-  
+  <link rel="stylesheet" href="./Styles/facebook.css">
 </head>
 <body>
+  <main id="main-contents-container">
   <header>
     <h1>Nms Multiplayer</h1>
   </header>
@@ -22,9 +22,10 @@
     <!-- Videos will be dynamically added here -->
   </div>
   <div id="globalControls" class="global-controls-container">
-      <button id="play-all-button" class="playAll"><i class="fa-solid fa-play"></i> Play</button>
-      <button id="pause-all-button" class="pauseAll"><i class="fa-solid fa-pause"></i> Pause</button>
-      <button id="clear-all-button" class="pauseAll"><i class="fa-solid fa-trash"></i> Clear</button>
+      <button id="play-all-button" class="playAll"><i class="fa-solid fa-play"></i><span>Play</span></button>
+      <button id="pause-all-button" class="pauseAll"><i class="fa-solid fa-pause"></i><span>Pause</span></button>
+      <button id="clear-all-button" class="pauseAll"><i class="fa-solid fa-trash"></i><span>Clear</span></button>
+      <button id="replay-button" class="pauseAll"><i class="fa-solid fa-reply"></i><span>Replay</span></button>
     </div>
   <div id="controls">
     <div class="input-area">
@@ -45,26 +46,12 @@
 	  <input type="file" id="file-input" class="hidden-input" accept="audio/*,video/*" multiple>
 	  <label for="file-input" class="file-input-label"><i class="fa-regular fa-file"></i> Add a local file</label>
 	  
-<!--	  <button onClick="selectFileUsingExpo()">Expo picker</button>-->
-	  
 	  </div>
   
+  </main>
     <div id="pause-timer-modal" class="timer-modal">
-  <!-- <div class="timer-modal-content">
-    <h3>Set Pause Timer</h3>
-    <label>Minutes:</label>
-    <input type="number" id="timer-min" min="0" value="0">
-    <label>Seconds:</label>
-    <input type="number" id="timer-sec" min="0" value="0">
-    <div class="timer-buttons">
-      <button id="timer-cancel">Cancel</button>
-      <button id="timer-set">Set Timer</button>
-    </div>
-  </div> -->
-
   <div class="timer-modal-content">
     <h2 class="PauseTitle">Set Pause Timer</h2>
-    
     <div class="roller-wrapper">
         <div class="selection-overlay"></div>
         
@@ -96,7 +83,7 @@
 </div>
   </div>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="./Scripts/script.js"></script>
+    <script type="module" src="./Scripts/script.js"></script>
     <script src="./Scripts/timer.js"></script>
 </div>
 </body>

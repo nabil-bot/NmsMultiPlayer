@@ -67,8 +67,8 @@ header {
 .global-controls-container{
   display: flex;
   max-height: 20px;
-  padding-left: 8%;
-  padding-right: 8%;
+  padding-left: 5%;
+  padding-right: 5%;
   padding-bottom: 6%;
   gap: 2%;
 }
@@ -77,30 +77,26 @@ header {
 
 .playAll, .pauseAll {
     /* 1. Sizing and Layout (Mobile-Friendly Touch Targets) */
-    padding: 8px 14px;
-    margin: 0 6px; /* Space between the two buttons */
-    min-width: 100px;
+    align-items: center;
+    padding: 8px;
+    margin: 0 3px; /* Space between the two buttons */
+ 
     min-height: 38px; /* Recommended minimum touch target size */
-    
     /* 2. Typography and Appearance */
     font-size: 12px;
-    font-weight: 600;
+    font-weight: var(--fw-semibold);
     border: none;
-    border-radius: 16px; /* Pill shape for modern look */
+    border-radius: 18px; /* Pill shape for modern look */
     cursor: pointer;
     letter-spacing: 0.5px;
-    
-    /* 3. Smooth Animations */
     transition: 
-        background-color 0.2s ease-out, 
-        transform 0.1s ease-out,
-        box-shadow 0.2s ease-out;
-    
-    /* 4. Icon Styling */
-    display: inline-flex;
-    align-items: center;
-    gap: 8px; /* Space between icon and text */
-    text-align: center;
+    background-color 0.2s ease-out, 
+    transform 0.1s ease-out,
+    box-shadow 0.2s ease-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
 }
 
 /* --- Play All (Primary Action - Green) --- */
@@ -194,7 +190,7 @@ header {
 .volume-icon {
   font-size: 1.2em;
   padding-right: var(--space-sm);
-  color: var(--bg-surface);
+  color: var(--border);
 }
 
 .video-controls {
@@ -220,6 +216,7 @@ header {
 .remove-btn {
   margin-left: 5px;
 	margin-bottom: 8px;
+  margin-right: 8px;
   padding: 8px;
   border: none;
   background-color: var(--primary); 
@@ -590,7 +587,7 @@ select {
   font-size: 14px;
   /* color: #333; */
   background-color: var(--primary);
-  color: var(--text-bold);
+  color: var(--text-subtle);
   text-align: left;
   border: none;
 }

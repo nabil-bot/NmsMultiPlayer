@@ -1,3 +1,5 @@
+import { addFacebookVideoPlayer } from './facebook.js';
+
 let videoCount = 0;
 let players = [];
 const volume = 50;
@@ -385,10 +387,16 @@ async function addVideo() {
   const videoUrlInput = document.getElementById('video-url');
   let videoUrl = videoUrlInput.value.trim();
 
+  if (videoUrl.includes("facebook")) {
+    addFacebookVideoPlayer(videoUrl, 50, document.getElementById("videos-container"));
+    return
+  }
+  
   if (videoUrl.includes(",")) {
     filterLink(videoUrl, 60, 0)
     return
   }
+
 
   if (!videoUrl) {
     sendWebViewSignal('VIDEO_BROWSE', 'Browse')
@@ -402,6 +410,11 @@ async function addVideo() {
     addLocalVideoPlayer(videoUrl);
     // addOnlineVideoPlayer(videoUrl)
   }
+
+
+
+
+
   videoUrlInput.value = '';
 }
 
@@ -517,7 +530,7 @@ document.getElementById('add-video-btn').addEventListener('click', addVideo);
 document.getElementById('browse-btn').addEventListener('click', OpenBrowser);
 document.getElementById('paste-btn').addEventListener('click', pasteFromClipboard);
 document.getElementById('clear-all-button').addEventListener('click', clearAll);
-
+document.getElementById('replay-button').addEventListener('click', replayAll);
 
 
 function sendWebViewSignal(type_, title_) {
@@ -850,8 +863,6 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     volumeContainer.classList.add('volume-container');
     const speakerIcon = document.createElement('i');
     speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
-    speakerIcon.style.color = 'var(--bg-surface)';
-    speakerIcon.style.paddingRight = 'var(--space-sm)';
     volumeContainer.appendChild(speakerIcon);
 
     const volumeSlider = document.createElement('input');
@@ -1011,33 +1022,15 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     videoFileLabel.textContent = name;
     videoFileLabel.classList.add('VideoFileName');
     
-    const removeButton = document.createElement('button');
-    const RemoveIcon = document.createElement('i');
-    RemoveIcon.className = "fa-solid fa-xmark fa-xl";
-    removeButton.appendChild(RemoveIcon);
-    removeButton.style = 'var(--text-subtle)';
-    
-    removeButton.classList.add('remove-btn');
-    
-    removeButton.addEventListener('click', function() {
-      videoContainer.remove();
-      // Logic to clear file input and delete cookie data
-      // (Assuming fileInput is accessible in this scope)
-      // fileInput.value = ''; 
-      // try {
-      //   var fileDic = getCookie("fileDic");
-      //   if (fileDic !== null && url in fileDic) {
-      //     delete fileDic[url];
-      //     if (Object.keys(fileDic).length == 0) {
-      //       deleteCookie("fileDic");
-      //     } else {
-      //       setCookie("fileDic", fileDic, 10);
-      //     }
-      //   }
-      // } catch (error) {
-      //   alert("An error occurred during removal: " + error);
-      // }
-    });
+    // const removeButton = document.createElement('button');
+    // const RemoveIcon = document.createElement('i');
+    // RemoveIcon.className = "fa-solid fa-xmark fa-xl";
+    // removeButton.appendChild(RemoveIcon);
+    // removeButton.style = 'var(--text-subtle)';
+    // removeButton.classList.add('remove-btn');
+    // removeButton.addEventListener('click', function() {
+    //   videoContainer.remove();
+    // });
 
     // 15. Menu Button (using the audio player's logic)
     const MenuButton = document.createElement('button');
@@ -1053,7 +1046,8 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     const menuItems = [
       { text: 'Set Pause Timer', iconClass: 'fas fa-pause' },
       { text: 'Copy Link', iconClass: 'fas fa-copy' },
-      { text: 'Toggle Fullscreen', iconClass: 'fas fa-expand' } // Video specific menu item
+      { text: 'Toggle Fullscreen', iconClass: 'fas fa-expand' }, // Video specific menu item
+      { text: 'Remove', iconClass: 'fa-solid fa-xmark fa-xl'}
     ];
     
     menuItems.forEach(item => {
@@ -1086,7 +1080,10 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
             } else if (videoPlayer.msRequestFullscreen) { // IE/Edge
                 videoPlayer.msRequestFullscreen();
             }
+        } else if (item.text == 'Remove'){
+          videoContainer.remove();
         }
+
         menu.style.display = 'none';
       });
       menu.appendChild(menuItem);
@@ -1119,7 +1116,7 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     removeContainer.classList.add('remove-container');
     removeContainer.appendChild(MenuButton);
     removeContainer.appendChild(videoFileLabel);
-    removeContainer.appendChild(removeButton);
+    // removeContainer.appendChild(removeButton);
     
     sliderContainer.appendChild(timelineSlider);
     sliderContainer.appendChild(timeLabelContainer);
@@ -1167,7 +1164,6 @@ async function addAudioPlayer(url, name, timeFrame=0, volume=0.8) {
   const audioPlayer = document.createElement('audio');
   let pauseTimeoutId = null; 
   let countdownIntervalId = null;
-  
   
   audioPlayer.src = url;
   audioPlayer.controls = false;
@@ -1241,6 +1237,15 @@ sliderContainer.addEventListener('mousedown', () => {
         loopIcon.classList.add('fa-solid', 'fa-repeat');
     }
   }
+
+  const playBackBtn = document.createElement('button')
+  const playBackIcon = document.createElement('i')
+  playBackIcon.className = 'fa-solid fa-reply'
+  playBackBtn.appendChild(playBackIcon)
+  playBackBtn.addEventListener('click', () => {
+    audioPlayer.currentTime = 0
+  })
+
   const loopBtn = document.createElement('button');
   const loopIcon = document.createElement('i');
   loopIcon.className = 'fa-solid fa-repeat'; // Add Font Awesome classes for the menu icon
@@ -1271,8 +1276,7 @@ sliderContainer.addEventListener('mousedown', () => {
   volumeContainer.classList.add('volume-container');
   const speakerIcon = document.createElement('i');
   speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
-  speakerIcon.style.color = 'var(--bg-surface)';
-  speakerIcon.style.paddingRight = 'var(--space-sm)';
+
   volumeContainer.appendChild(speakerIcon);
   const volumeSlider = document.createElement('input');
   volumeSlider.type = 'range';
@@ -1397,11 +1401,13 @@ volumeContainer.addEventListener('mousedown', () => {
   otherAudioControllersContainer.appendChild(playPauseBtn);
   otherAudioControllersContainer.appendChild(backwardButton);
   otherAudioControllersContainer.appendChild(forwardButton);
+  otherAudioControllersContainer.appendChild(playBackBtn)
   otherAudioControllersContainer.appendChild(loopBtn);
   otherAudioControllersContainer.appendChild(speedSelect);
-  volumeControlerContainer.appendChild(volumeContainer);
+  // volumeControlerContainer.appendChild(volumeContainer);
   audioControls.appendChild(otherAudioControllersContainer);
-  audioControls.appendChild(volumeControlerContainer);
+  // audioControls.appendChild(volumeControlerContainer);
+  // audioControls.appendChild(volumeContainer)
   const audioFileLabel = document.createElement('label');
   audioFileLabel.textContent = name;
   audioFileLabel.classList.add('AudioFileName');
@@ -1526,10 +1532,13 @@ volumeContainer.addEventListener('mousedown', () => {
 
 
   const modal = document.getElementById("pause-timer-modal");
+  const mainContainer = document.getElementById('main-contents-container');
   const minInput = document.getElementById("timer-min");
   const secInput = document.getElementById("timer-sec");
 
   modal.style.display = "flex";
+  mainContainer.classList.add('is-blurred');
+
 
   const cancel = document.getElementById("timer-cancel");
   const set = document.getElementById("timer-set");
@@ -1538,6 +1547,7 @@ volumeContainer.addEventListener('mousedown', () => {
     modal.style.display = "none";
     cancel.onclick = null;
     set.onclick = null;
+    mainContainer.classList.remove('is-blurred');
   }
 
   cancel.onclick = close;
@@ -1652,6 +1662,7 @@ menu.addEventListener('click', (e) => {
   audioContainer.appendChild(sliderContainer);
   audioContainer.appendChild(audioPlayer);
   audioContainer.appendChild(audioControls);
+  audioContainer.appendChild(volumeContainer)
   videosContainer.appendChild(audioContainer);
 
   try {
@@ -1927,6 +1938,30 @@ function clearAll() {
     // User clicked 'Cancel', nothing happens
     console.log("Action cancelled.");
   }
+}
+
+
+function replayAll() {
+  const videosContainer = document.getElementById('videos-container');
+  // 1. Find all video and audio elements inside the container
+  const allMedia = videosContainer.querySelectorAll('video, audio');
+
+  // 2. Loop through each media element
+  allMedia.forEach(media => {
+      // Reset to beginning
+      media.currentTime = 0;
+      
+      // Start playback
+      // We use a promise check to avoid errors if a video hasn't loaded yet
+      const playPromise = media.play();
+
+      if (playPromise !== undefined) {
+          playPromise.catch(error => {
+              console.error("Playback failed for one element:", error);
+          });
+      }
+  });
+
 }
 
 

@@ -12,10 +12,9 @@
     padding: 2rem;
     border-radius: 32px;
     box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-    width: 90%;
+    width: 65%;
     max-width: 380px;
-    /* Height increased for a more vertical, elegant look */
-    height: 520px; 
+    height: 480px; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -46,7 +45,6 @@
     pointer-events: none;
     z-index: 10;
 }
-
 /* Stationary Labels positioned higher */
 .label-container {
     position: absolute;
@@ -136,6 +134,17 @@ input[type="number"] { display: none; }
 .PauseTitle{
 font-weight: var(--fw-semibold); 
 font-size: var(--fs-md); 
-color: var(--bg-surface);
+color: var(--text-subtle);
 margin-top: 0;
+text-align: center;
+}
+
+
+
+/* The class we will add via JS */
+.is-blurred {
+    filter: blur(15px);
+    pointer-events: none; /* Optional: prevents clicking buttons inside the blurred area */
+    user-select: none;    /* Optional: prevents selecting text while blurred */
+    transition: filter 0.3s ease; /* Makes the blur appear smoothly */
 }

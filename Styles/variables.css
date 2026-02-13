@@ -4,13 +4,13 @@
   --radius-md: 8px;
   --shadow-standard: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 
-  --bg-main: #1f1f1f;
-  --bg-surface: #5f6368;
+   --bg-main: #000000; /* #1f1f1f; */
+  --bg-surface: #1f1f1f; /*#5f6368; */
   --text-bold: #e8eae1;
   --text-subtle: #bfbfbf;
   --primary: #303134;
   --accent: #28292a;
-  --border: #e2e8f0;
+  --border: #6b6b6c;
 
   --click-Primary: #a8c7fa;
 
