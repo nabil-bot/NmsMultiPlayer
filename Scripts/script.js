@@ -533,7 +533,6 @@ function OpenBrowser() {
 }
 
 async function addVideoFromNative(videoUrl) {
-  alert("in addVideoFromNative");
   await filterLink(videoUrl, 70, 0)
 }
 
@@ -1720,7 +1719,6 @@ menuItems.forEach(item => {
 
   // Add click functionality
   menuItem.addEventListener('click', () => {
-    // alert(`You clicked: ${item.text}`);
     if (item.text == 'Set Pause Timer'){ 
       setPauseTimer();
     }
@@ -1894,7 +1892,6 @@ pauseAllButton.addEventListener('click', handlePauseAll);
 
 
 async function filterLink(videoUrl, volume, timeFrame) {
-  alert("in fiter link");
   return new Promise((resolve, reject) => {
     if (videoUrl.includes(",")){
       let splitedUrls = videoUrl.split(",")
