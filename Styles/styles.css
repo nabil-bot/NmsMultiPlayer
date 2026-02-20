@@ -19,7 +19,7 @@ header {
   margin-top: 16px;
 }
 
-.audio-container, .video-container {
+.audio-container, .video-local-container {
   width: 100%;
   background-color: var(--accent);
   margin-top: 12px;
@@ -33,6 +33,11 @@ header {
   width: 100%;
 }
 
+
+.timer-status{
+margin-left: 10px;
+font-size: 12px;
+}
 
 .audio-controls, .local-video-controls{
   justify-content: center; 
@@ -163,12 +168,6 @@ header {
 }
 
 
-.slider {
-  width: 100%;
-  background-color: var(--primary);
-  height: 4px;
-  color: var(--primary);
-}
 
 
 
@@ -234,11 +233,11 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
-label {
+/* label {
   font-size: 18px;
   color: #333;
   cursor: pointer;
-}
+} */
 
 #globalControls {
   margin-top: 40px;
@@ -306,7 +305,7 @@ body {
 #goblaControls label {
   margin-left: 5px;
   font-size: 16px;
-  color: #333; 
+  /* color: #333;  */
 }
 
 .video-speed-select {
@@ -456,44 +455,82 @@ select {
   margin-bottom: 3px;
 }
 
-.timeline-slider {
-  width: 100%;
-  margin-bottom: 10px; /* Adds space between the slider and the labels */
-}
 
-.timeline-slider:disabled {
-  opacity: 0.8; /* Makes the slider appear faded */
-  cursor: not-allowed; /* Changes the cursor to indicate it's not clickable */
-}
 
-.timeline-slider {
+
+/* Track */
+.timeline-slider,
+.slider {
   width: 100%;
-  height: 10px;
   background: var(--bg-surface);
   border-radius: 5px;
   outline: none;
   -webkit-appearance: none;
+  height: 8px;
 }
 
-.timeline-slider::-webkit-slider-thumb {
-  width: 25px;
-  height: 20px;
-  background: #4CAF50;
-  border-radius: 10%;
-  cursor: pointer;
+.slider{
+  height: 5px;
 }
 
-.timeline-slider:disabled::-webkit-slider-thumb {
-  height: 10px;
-  opacity: 0.85;
+
+.slider:disabled, .timeline-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.timeline-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  background: #4CAF50;
+/* Enabled thumb */
+.timeline-slider:not(:disabled)::-webkit-slider-thumb,
+.slider:not(:disabled)::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;                 /* same for both */
+  height: 12px;
+  background: var(--active-Primary);
   border-radius: 50%;
   cursor: pointer;
+  box-shadow: 0 0 8px var(--active-Primary);
+}
+
+.timeline-slider:not(:disabled)::-moz-range-thumb,
+.slider:not(:disabled)::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--active-Primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--active-Primary);
+}
+
+/* Active glow */
+.timeline-slider:not(:disabled)::-webkit-slider-thumb:active,
+.slider:not(:disabled)::-webkit-slider-thumb:active {
+  box-shadow: 0 0 12px var(--active-Primary);
+}
+
+.timeline-slider:not(:disabled)::-moz-range-thumb:active,
+.slider:not(:disabled)::-moz-range-thumb:active {
+  box-shadow: 0 0 12px var(--active-Primary);
+}
+
+/* Disabled thumb */
+.timeline-slider:disabled::-webkit-slider-thumb,
+.slider:disabled::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  background: #999;
+  border-radius: 50%;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.timeline-slider:disabled::-moz-range-thumb,
+.slider:disabled::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  background: #999;
+  border-radius: 50%;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 
@@ -501,9 +538,11 @@ select {
 
 .timelabelContainer {
   display: flex;
+  
   flex-direction: row;
 	justify-content: space-between;
   /* height: 15px; */
+  padding-top: 6px;
 }
 
 .time-label {
@@ -521,9 +560,10 @@ select {
         }
 
         .file-input-label {
-            display: inline-block;
-            color: white;
-			background-color: #92FF93;
+           
+            color: var(--text-bold);
+			/* background-color: #92FF93; */
+            background-color: var(--bg-surface);
             padding: 10px 20px; /* Add padding */
             font-size: 16px; /* Adjust font size */
             border-radius: 5px; /* Rounded corners */
@@ -532,9 +572,9 @@ select {
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        .file-input-label:hover {
-            background-color: #45a049; /* Darker green on hover */
-        }
+        /* .file-input-label:hover {
+            background-color: #45a049; 
+        } */
 
         .file-input-label:active {
             transform: scale(0.98); /* Slightly shrink on click */

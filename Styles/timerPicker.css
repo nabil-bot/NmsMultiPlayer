@@ -84,7 +84,7 @@
 .roller::-webkit-scrollbar { display: none; }
 
 .roller-list {
-    padding: 180px 0; /* Adjusted for taller card */
+    padding: 140px 0; /* Adjusted for taller card */
     list-style: none;
     margin: 0;
 }
@@ -131,7 +131,7 @@ button:active { transform: scale(0.95); }
 input[type="number"] { display: none; }
 
 
-.PauseTitle{
+.timer-modal-title{
 font-weight: var(--fw-semibold); 
 font-size: var(--fs-md); 
 color: var(--text-subtle);

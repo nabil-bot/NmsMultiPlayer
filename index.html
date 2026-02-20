@@ -16,16 +16,15 @@
 <body>
   <main id="main-contents-container">
   <header>
-    <h1>Nms Multiplayer!</h1>
+    <h1>Nms Multiplayer</h1>
   </header>
-  <div id="videos-container">
-    <!-- Videos will be dynamically added here -->
-  </div>
-  <div id="globalControls" class="global-controls-container">
+  <div id="videos-container"></div>
+  <div id="globalControls" class="global-controls-container" style="display: none;">
       <button id="play-all-button" class="playAll"><i class="fa-solid fa-play"></i><span>Play</span></button>
       <button id="pause-all-button" class="pauseAll"><i class="fa-solid fa-pause"></i><span>Pause</span></button>
-      <button id="clear-all-button" class="pauseAll"><i class="fa-solid fa-trash"></i><span>Clear</span></button>
       <button id="replay-button" class="pauseAll"><i class="fa-solid fa-reply"></i><span>Replay</span></button>
+      <button id="clear-all-button" class="pauseAll"><i class="fa-solid fa-trash"></i><span>Clear</span></button>
+
     </div>
   <div id="controls">
     <div class="input-area">
@@ -47,11 +46,13 @@
 	  <label for="file-input" class="file-input-label"><i class="fa-regular fa-file"></i> Add a local file</label>
 	  
 	  </div>
-  
+    <br>
+    <br>
+    <button onclick="sendWebViewSignal('reload', 'reload')">Reload</button>
   </main>
     <div id="pause-timer-modal" class="timer-modal">
   <div class="timer-modal-content">
-    <h2 class="PauseTitle">Set Pause Timer</h2>
+    <h2 id="timerTitle" class="timer-modal-title">Set Pause Timer</h2>
     <div class="roller-wrapper">
         <div class="selection-overlay"></div>
         
@@ -76,16 +77,15 @@
 
     <input type="number" id="timer-min" value="0">
     <input type="number" id="timer-sec" value="0">
-
-
 </div>
 
 </div>
   </div>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <!-- <script type="module" src="./Scripts/script.js"></script> -->
-    <script src="./Scripts/script.js"></script>
-
+    <script src="./Scripts/common.js"></script>
+    <script src="./Scripts/audioPlayer.js"></script>
+    <script src="./Scripts/LocalVideoPlayer.js"></script>
+    <script src="./Scripts/main.js"></script>
     <script src="./Scripts/timer.js"></script>
 </div>
 </body>

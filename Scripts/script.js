@@ -230,9 +230,6 @@ async function addVideoPlayer(
         setCookie("urlDic", dic, 10);
       }
     }
-    
-    
-    
   });
 
   speakerIcon.addEventListener("click", () => {
@@ -324,10 +321,6 @@ async function addVideoPlayer(
 
   }
 
-  
-
-  
-  
   // TIMER STATUS CONTAINER
   const timerStatus = document.createElement("div");
   timerStatus.className = "timer-status";
@@ -418,6 +411,7 @@ async function addVideoPlayer(
     wait();
   }
 
+
   function changePlaylistVideo(dir) {
     if (!playlistVideos.length) return;
 
@@ -473,7 +467,7 @@ async function addVideoPlayer(
 
     setTimeout(() => player.pauseVideo(), total * 1000);
   };
-}
+    }
 
 }
 
@@ -492,6 +486,8 @@ function isYouTubeUrl(url) {
     return false; // invalid URL
   }
 }
+
+
 
 async function addVideo() {
   const videoUrlInput = document.getElementById('video-url');
@@ -516,15 +512,8 @@ async function addVideo() {
     // handle YouTube
     await filterLink(videoUrl, 60, 0);
   } else {
-    // non-YouTube → local HTML5 video
     addLocalVideoPlayer(videoUrl);
-    // addOnlineVideoPlayer(videoUrl)
   }
-
-
-
-
-
   videoUrlInput.value = '';
 }
 
@@ -534,6 +523,10 @@ function OpenBrowser() {
 
 async function addVideoFromNative(videoUrl) {
   await filterLink(videoUrl, 70, 0)
+}
+
+async function addToPlaylist(videoUrl) {
+  pass
 }
 
 
@@ -609,9 +602,7 @@ function setSpeed(videoWrapper, speed) {
   }
 }
 function pasteFromClipboard() {
-  
   try {
-
     navigator.clipboard.readText()
     .then(text => {
       document.getElementById('video-url').value = text.trim();
@@ -623,8 +614,6 @@ function pasteFromClipboard() {
   } catch (error) {
     console.log(error);
   }
-
-  
   try {
     window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
   } catch (error){
@@ -1525,21 +1514,6 @@ volumeContainer.addEventListener('mousedown', () => {
   
   
   
-  
-  
-  
-  // const removeButton = document.createElement('button');
-  // const RemoveIcon = document.createElement('i');
-  // RemoveIcon.className = "fa-solid fa-xmark fa-xl"
-  // removeButton.appendChild(RemoveIcon);
-  // removeButton.style = 'color: black'
-  // removeButton.classList.add('remove-btn');
-  // removeButton.addEventListener('click', function () {
-  //   audioContainer.remove();
-  //   fileInput.value = '';
-  // });
-
-
 
 
 
@@ -1885,6 +1859,8 @@ function handlePauseAll() {
     });
   }
 }
+
+
 
 playAllButton.addEventListener('click', handlePlayAll);
 // When the 'pauseAllButton' is clicked, execute the 'handlePauseAll' function

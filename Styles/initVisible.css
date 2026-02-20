@@ -42,6 +42,24 @@
   font-size: 1rem;
 }
 
+.cancel-timer-button, .edit-timer-button{
+  font-size: 12px;
+  /* padding: 2px; */
+  margin-right: 5px;
+  margin-left: 5px;
+  background-color: var(--primary);
+  color: var(--text-subtle);
+  border: none;
+  border-radius: 2px;
+}
+
+
+.timer-display{
+  color: var(--border);
+  text-align: center;
+  align-items: center;
+}
+
 .pasteBtn, .clearBtn {
   background: transparent;
   border: none;
@@ -53,8 +71,11 @@
   transition: color 0.2s;
 }
 
+
+
 .pasteBtn:hover, .clearBtn:hover {
-  color: var(--primary);     /* Changes icon color on hover */
+  color: var(--text-bold);     /* Changes icon color on hover */
+  padding: 2px;
 }
 
 
@@ -91,8 +112,8 @@
 
 
 .group-container {
-  margin-top: 12px;
-  padding-top: 20px;
+  /* margin-top: 12px; */
+  /* padding-top: 20px; */
   border-radius: 5px;
-  padding: 10px;
+  /* padding: 10px; */
 }
