@@ -78,6 +78,26 @@ font-size: 12px;
   gap: 2%;
 }
 
+.playlist-navigation{
+  display: flex;
+  justify-content: space-between;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.auto-play-checkbox-container{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 5%;
+  padding-right: 5%;
+  gap: 4px;
+}
+.auto-play-label{
+  color: var(--border);
+  font-size: var(--fs-sm);
+}
+
 
 
 .playAll, .pauseAll {
@@ -196,7 +216,7 @@ font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
+  margin: 4px;
 }
 
 .volume-container {
@@ -392,7 +412,7 @@ audio::-webkit-media-controls-time-remaining-display {
   margin: 0 5px;
 }
 
-.AudioFileName, .VideoFileName{
+.MediaNameLable, .VideoFileName{
   color: var(--text-subtle);
   font-weight: 500;
   font-size: 14px;

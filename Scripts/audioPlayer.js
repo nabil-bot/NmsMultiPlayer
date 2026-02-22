@@ -246,7 +246,7 @@ volumeContainer.addEventListener('mousedown', () => {
   // audioControls.appendChild(volumeContainer)
   const audioFileLabel = document.createElement('label');
   audioFileLabel.textContent = name;
-  audioFileLabel.classList.add('AudioFileName');
+  audioFileLabel.classList.add('MediaNameLable');
   
   
   function setPauseTimer() {

@@ -6,6 +6,8 @@ class multiPlayer {
         this.ytPlaylist = [];
         this.currentPlaylistIndex = 0;
         this.playlistLabel = null
+        this.autoPlayCheckBox = null
+        this.playlistVolume = 80;
         // connectors ============================
         this.browseBtn = document.getElementById('browse-btn');
         this.pasteBtn = document.getElementById('paste-btn');
@@ -71,7 +73,14 @@ class multiPlayer {
       let videoUrl = videoUrlInput.value.trim();
 
       if (isYouTubeUrl(videoUrl)) {
-        this.addYoutubeVideo(videoUrl);
+        if (videoUrl.includes(",")){
+          const splitedUrls = videoUrl.split(",");
+          videoUrl = splitedUrls[0];
+          this.addYoutubeVideo(videoUrl, 70, true, splitedUrls, 0, 0, true); 
+        }else{
+          this.addYoutubeVideo(videoUrl);
+        }
+
       }
     }
 
@@ -79,6 +88,7 @@ class multiPlayer {
       try{
         
         if (isPlaylist){
+          this.playlistVolume = volume;
           if (this.ytPlaylist.length > 0){
             const isConfirmed = confirm("Do you want to add to curretn playlist?");
             if (!isConfirmed) return  
@@ -101,6 +111,17 @@ class multiPlayer {
 
         const videoWrapper = document.createElement("div");
         videoWrapper.classList.add("video-wrapper");
+
+
+        const titleBar = document.createElement("div");
+        titleBar.classList.add("remove-container");
+      
+
+        const mediaLabel = document.createElement('label');
+        // mediaLabel.textContent = '';
+        mediaLabel.classList.add('MediaNameLable');
+        
+
 
         // Iframe
         const iframe = document.createElement("iframe");
@@ -141,10 +162,11 @@ class multiPlayer {
         }
 
         volumeContainer.addEventListener("mousedown", enableVolumeTemporarily);
-
-        // Save and apply volume
         volumeSlider.addEventListener("input", () => {
           setVolume(videoWrapper, volumeSlider.value);
+          if (isPlaylist){
+            this.playlistVolume = volumeSlider.value
+          }
           if (customPlaylist){
             const dic = getCookie("customListDic") || {};
             dic.volume = volumeSlider.value;
@@ -182,6 +204,7 @@ class multiPlayer {
           { text: "Set Pause Timer", iconClass: "fas fa-pause" },
           { text: "Set Play Timer", iconClass: "fas fa-play" },
           { text: "Copy Link", iconClass: "fas fa-copy" },
+           {text: 'Remove', iconClass: 'fa-solid fa-xmark fa-xl'}
         ];
 
 
@@ -207,8 +230,28 @@ class multiPlayer {
 
             if (item.text === "Set Pause Timer") pauseVideo();
             if (item.text === "Set Play Timer") playVideo();
-            
-          };
+            if (item.text === "Remove"){
+                try{
+                  removeVideo(videoWrapper, videoUrl);
+                  const dic = getCookie("urlDic");
+                  if (dic && dic[videoUrl]) {
+                    delete dic[videoUrl];
+                    Object.keys(dic).length
+                      ? setCookie("urlDic", dic, 10)
+                      : deleteCookie("urlDic");
+                  }
+                      showHideGlobarControls();
+                      if (isPlaylist){
+                        this.ytPlaylist = [];
+                    }
+
+                    if (customPlaylist) return deleteCookie("customListDic");
+
+                  }catch(e){
+                    alert(e);
+                  }
+                    }
+               };
 
           menu.appendChild(el);
         });
@@ -223,8 +266,9 @@ class multiPlayer {
 
         document.addEventListener("click", () => (menu.style.display = "none"));
         menu.addEventListener("click", (e) => e.stopPropagation());
-        videoControlsWrapper.appendChild(menuBtn);
-
+  
+        titleBar.appendChild(menuBtn);
+        titleBar.appendChild(mediaLabel);
         // Playlist buttons
 
         if (isPlaylist) {
@@ -236,14 +280,42 @@ class multiPlayer {
           const prevBtn = document.createElement("button");
           prevBtn.textContent = "⏮";
           prevBtn.className = "previous-btn";
-          prevBtn.onclick = () => this.changePlaylistVideo(-1, iframe);
+          prevBtn.onclick = () => this.changePlaylistVideo(-1, iframe, mediaLabel);
 
           const nextBtn = document.createElement("button");
           nextBtn.textContent = "⏭";
           nextBtn.className = "next-btn";
-          nextBtn.onclick = () => this.changePlaylistVideo(+1, iframe);
+          nextBtn.onclick = () => this.changePlaylistVideo(+1, iframe, mediaLabel);
+          
+          
+          const playlistNavigationDiv = document.createElement("div");
+          playlistNavigationDiv.className = "playlist-navigation";
+          playlistNavigationDiv.append(prevBtn, this.playlistLabel, nextBtn);
 
-          videoControlsWrapper.append(prevBtn, this.playlistLabel, nextBtn);
+
+          const checkBoxContainer = document.createElement("div");
+          checkBoxContainer.className = "auto-play-checkbox-container";
+          this.autoPlayCheckBox = document.createElement("input");
+          this.autoPlayCheckBox.type = "checkbox";
+          this.autoPlayCheckBox.checked = true;
+          this.autoPlayCheckBox.className = "auto-play-checkbox";
+
+          const autoPlayLabel = document.createElement("label");
+          autoPlayLabel.textContent = "Auto Play";
+          autoPlayLabel.className = "auto-play-label";
+          
+          checkBoxContainer.append(this.autoPlayCheckBox, autoPlayLabel);
+
+          const showPlaylistBtn = document.createElement("button");
+          const dropIcon = document.createElement("i");
+          dropIcon.className = "fas fa-caret-down";
+          showPlaylistBtn.append(dropIcon);
+          showPlaylistBtn.className = "show-playlist-btn";
+          
+
+          videoControlsWrapper.append(playlistNavigationDiv);
+          videoControlsWrapper.append(checkBoxContainer);
+          videoControlsWrapper.append(showPlaylistBtn);
 
         }
 
@@ -253,46 +325,13 @@ class multiPlayer {
         timerStatus.style.display = "none"; // hidden unless active
         videoControlsWrapper.appendChild(timerStatus);
 
-        // Remove button
-        const removeBtn = document.createElement("button");
-        const removeIcon = document.createElement("i");
-        removeIcon.className = "fa-solid fa-xmark fa-xl";
-        removeBtn.appendChild(removeIcon);
-        removeBtn.className = "remove-btn";
-
-
-
-        removeBtn.onclick = () => {
-            try{
-              removeVideo(videoWrapper, videoUrl);
-              const dic = getCookie("urlDic");
-              if (dic && dic[videoUrl]) {
-                delete dic[videoUrl];
-                Object.keys(dic).length
-                  ? setCookie("urlDic", dic, 10)
-                  : deleteCookie("urlDic");
-              }
-              showHideGlobarControls();
-              if (isPlaylist){
-                this.ytPlaylist = [];
-              }
-
-              if (customPlaylist) return deleteCookie("customListDic");
-
-            }catch(e){
-              alert(e);
-            }
-          };
-        
-        videoControlsWrapper.appendChild(removeBtn);
-
         // Append everything
-        videoWrapper.append(iframe, volumeContainer, videoControlsWrapper);
+        videoWrapper.append(titleBar, iframe, volumeContainer, videoControlsWrapper);
         this.videosContainer.appendChild(videoWrapper);
 
 
         // ---- PLAYER INITIALIZATION ---- //
-        this.initializeYouTubeAPI(iframe, volume, timeFrame);
+        this.initializeYouTubeAPI(iframe, volume, timeFrame, mediaLabel);
 
 
         // ---- SAVE URL PROPERTIES ---- //
@@ -332,9 +371,10 @@ class multiPlayer {
       
       } // end of addYoutubeVideo
 
-    changePlaylistVideo(dir, iframe) {
-          if (!this.ytPlaylist.length) 
+    changePlaylistVideo(dir, iframe, mediaLabel) {
+          if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) 
             return;
+          if (!this.autoPlayCheckBox.checked) return;
 
           this.currentPlaylistIndex =
             (this.currentPlaylistIndex + dir + this.ytPlaylist.length) %
@@ -346,54 +386,58 @@ class multiPlayer {
 
           iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
           
-          this.initializeYouTubeAPI(iframe, volumeSlider.value, 0);
+          this.initializeYouTubeAPI(iframe, this.playlistVolume, 0, mediaLabel);
 
-          if (customPlaylist) {
-            const dic = getCookie("customListDic") || {};
-            dic.currentIndex = this.currentPlaylistIndex;
-            setCookie("customListDic", dic, 14);
-          }
+          
+          const dic = getCookie("customListDic") || {};
+          dic.currentIndex = this.currentPlaylistIndex;
+          setCookie("customListDic", dic, 14);
+          
         }  
 
-    initializeYouTubeAPI(iframe, volume, timeFrame) {
-            function createPlayer() {
-              const player = new YT.Player(iframe, {
-                events: {
-                  onReady(e) {
-                    e.target.setVolume(volume);
+   initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel) {
+    // Store the volume on the iframe element so the API can always find the "current" target
+    iframe.dataset.targetVolume = volume_;
+
+    const createPlayer = () => {
+        const player = new YT.Player(iframe, {
+            events: {
+                onReady: (e) => {
+                    // Always pull the volume from the dataset, which is updated per-call
+                    const getLatestVol = () => Number(iframe.dataset.targetVolume);
+                    
+                    e.target.setVolume(getLatestVol());
                     e.target.seekTo(timeFrame);
+                    
+                    if (mediaLabel) {
+                        const videoData = e.target.getVideoData();
+                        mediaLabel.textContent = videoData.title;
+                    }
+
+                    let checkCount = 0;
+                    const forceVol = setInterval(() => {
+                        e.target.setVolume(getLatestVol());
+                        checkCount++;
+                        if (checkCount > 10) clearInterval(forceVol); // Increased to 10 for safety
+                    }, 200);
 
                     if (!players.includes(e.target)) players.push(e.target);
-
-                    // Force volume after player loads to fix autoplay-volume delay
-                    setTimeout(() => {
-                      try {
-                        player.setVolume(volume);
-                      } catch {}
-                    }, 300);
-                  },
-
-                  onStateChange(e) {
-                    if (e.data === YT.PlayerState.ENDED) return this.changePlaylistVideo(+1, iframe);
-
-                    if (e.data === YT.PlayerState.PAUSED) {
-                      const dic = getCookie("urlDic");
-                      if (dic && dic[videoUrl]) {
-                        dic[videoUrl].timeFrame = Math.floor(player.getCurrentTime());
-                        setCookie("urlDic", dic, 10);
-                      }
-                    }
-                  },
                 },
-              });
-            }
+                onStateChange: (e) => {
+                    if (e.data === YT.PlayerState.ENDED) {
+                        this.changePlaylistVideo(+1, iframe, mediaLabel);
+                    }
+                },
+            },
+        });
+    }
 
-            function wait() {
-              if (!window.YT || !YT.Player) return setTimeout(wait, 80);
-              createPlayer();
-            }
-            wait();
-      }
+    const wait = () => {
+        if (!window.YT || !YT.Player) return setTimeout(wait, 80);
+        createPlayer();
+    }
+    wait();
+}
     
     addToYtPlaylist(url) {
       // alert(this.ytPlaylist.length);
