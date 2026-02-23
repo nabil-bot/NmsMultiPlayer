@@ -4,17 +4,19 @@ class multiPlayer {
     constructor() {
         this.medias = [];
         this.ytPlaylist = [];
+        this.ytPlaylist_loaded = false;
         this.currentPlaylistIndex = 0;
         this.playlistLabel = null
         this.autoPlayCheckBox = null
         this.playlistVolume = 80;
+        this.showingPlaylist = false;
+        this.playlistViewInstance = null;
         // connectors ============================
         this.browseBtn = document.getElementById('browse-btn');
         this.pasteBtn = document.getElementById('paste-btn');
         this.clearBtn = document.getElementById('clear-button');
         this.addVideoBtn = document.getElementById('add-video-btn');
         this.videosContainer = document.getElementById('videos-container');
-
         // this.videoUrl = document.getElementById('video-url');
         this.playAllButton = document.getElementById('play-all-button');
         this.pauseAllButton = document.getElementById('pause-all-button');
@@ -233,6 +235,14 @@ class multiPlayer {
             if (item.text === "Remove"){
                 try{
                   removeVideo(videoWrapper, videoUrl);
+                  if (isPlaylist){
+                      if (this.playlistViewInstance) {
+                          this.playlistViewInstance.destroy();
+                          this.playlistViewInstance = null; // Clear the reference
+                          this.ytPlaylist_loaded = false;   // Allow it to re-load next time
+                      }
+                    }
+
                   const dic = getCookie("urlDic");
                   if (dic && dic[videoUrl]) {
                     delete dic[videoUrl];
@@ -311,12 +321,12 @@ class multiPlayer {
           dropIcon.className = "fas fa-caret-down";
           showPlaylistBtn.append(dropIcon);
           showPlaylistBtn.className = "show-playlist-btn";
-          
+          showPlaylistBtn.id = "show-playlist-btn";
+          showPlaylistBtn.onclick = () => this.showPlaylist(iframe, mediaLabel);
 
           videoControlsWrapper.append(playlistNavigationDiv);
           videoControlsWrapper.append(checkBoxContainer);
           videoControlsWrapper.append(showPlaylistBtn);
-
         }
 
         // TIMER STATUS CONTAINER
@@ -327,6 +337,17 @@ class multiPlayer {
 
         // Append everything
         videoWrapper.append(titleBar, iframe, volumeContainer, videoControlsWrapper);
+
+        if (isPlaylist){
+          const playlistContainer = document.createElement("div");
+          playlistContainer.className = "playlist-container";
+          playlistContainer.id = "playlist-container";
+          playlistContainer.style.display = "none";
+          videoWrapper.appendChild(playlistContainer);
+        }
+
+
+
         this.videosContainer.appendChild(videoWrapper);
 
 
@@ -388,10 +409,14 @@ class multiPlayer {
           
           this.initializeYouTubeAPI(iframe, this.playlistVolume, 0, mediaLabel);
 
-          
-          const dic = getCookie("customListDic") || {};
-          dic.currentIndex = this.currentPlaylistIndex;
-          setCookie("customListDic", dic, 14);
+          // Update the Playlist UI Highlight
+          if (this.playlistViewInstance) {
+              this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
+          }
+
+          // const dic = getCookie("customListDic") || {};
+          // dic.currentIndex = this.currentPlaylistIndex;
+          // setCookie("customListDic", dic, 14);
           
         }  
 
@@ -434,10 +459,10 @@ class multiPlayer {
 
     const wait = () => {
         if (!window.YT || !YT.Player) return setTimeout(wait, 80);
-        createPlayer();
-    }
-    wait();
-}
+          createPlayer();
+          }
+        wait();
+      }
     
     addToYtPlaylist(url) {
       // alert(this.ytPlaylist.length);
@@ -448,6 +473,90 @@ class multiPlayer {
         this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
       }
     }
+
+
+    showPlaylist(iframe, mediaLabel) {
+          const showPlaylistBtn = document.getElementById("show-playlist-btn");
+          const icon = showPlaylistBtn.querySelector('i');
+
+          const playlistContainer = document.getElementById("playlist-container");
+          
+          // Toggle the state first
+          this.showingPlaylist = !this.showingPlaylist;
+
+          if (this.showingPlaylist) {
+              // We are now showing it, so show UP
+              icon.classList.remove('fa-caret-down');
+              icon.classList.add('fa-caret-up');
+              // Add code here to actually show your playlist UI
+          } else {
+              // We are hiding it, so show DOWN
+              icon.classList.remove('fa-caret-up');
+              icon.classList.add('fa-caret-down');
+              // Add code here to actually hide your playlist UI
+          }
+
+
+
+          if (this.showingPlaylist) {
+            playlistContainer.style.display = "block";
+            
+            // Always re-init if the data changed or hasn't been loaded
+            if (!this.ytPlaylist_loaded) {
+                this.playlistViewInstance = new PlaylistView(playlistContainer, this.ytPlaylist, {
+                    onItemClick: (idx) => {
+                      this.currentPlaylistIndex = idx;
+                      this.changePlaylistVideo(0, iframe, mediaLabel);
+                    },
+                    onDelete: (idx) => {
+                      const wasPlayingDeleted = (idx === this.currentPlaylistIndex);
+                      
+                      // 1. Remove from data array
+                      this.ytPlaylist.splice(idx, 1);
+
+                      // 2. Handle Index Re-calculation
+                      if (this.ytPlaylist.length === 0) {
+                          // Case: Playlist is now empty
+                          this.currentPlaylistIndex = 0;
+                          this.stopPlayer(); // Logic to clear iframe
+                      } 
+                      else if (idx < this.currentPlaylistIndex) {
+                          // Case: Deleted something above. 
+                          // We stay on the same video, but its index decreased.
+                          this.currentPlaylistIndex--;
+                      } 
+                      else if (wasPlayingDeleted) {
+                          // Case: Deleted the active video.
+                          // If we deleted the last item, stay on the new last index.
+                          if (this.currentPlaylistIndex >= this.ytPlaylist.length) {
+                              this.currentPlaylistIndex = this.ytPlaylist.length - 1;
+                          }
+                          // Auto-play the "new" video at this position
+                          this.changePlaylistVideo(0, iframe, mediaLabel);
+                      }
+
+                      // 3. Update the UI Highlight (Sync the blue active state)
+                      if (this.playlistViewInstance) {
+                          this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
+                      }
+
+                      // 4. Update the Label (1/9 etc)
+                      this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+                  },
+                    onReorder: (newList) => {
+                        this.ytPlaylist = newList;
+                        // Save to cookies here if needed
+                    }
+                });
+                this.playlistViewInstance.init(this.currentPlaylistIndex);
+                this.ytPlaylist_loaded = true;
+            }
+        } else {
+            playlistContainer.style.display = "none";
+        }
+
+
+      }
 
 }
 

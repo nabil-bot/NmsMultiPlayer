@@ -81,7 +81,7 @@ font-size: 12px;
 .playlist-navigation{
   display: flex;
   justify-content: space-between;
-  padding-left: 5%;
+
   padding-right: 5%;
 }
 
@@ -216,7 +216,7 @@ font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 4px;
+  margin: 5px;
 }
 
 .volume-container {
@@ -350,7 +350,7 @@ body {
   background-color: #f0f0f0; /* Change background color on hover */
 }
 
-.next-btn, .previous-btn{
+.next-btn, .previous-btn, .show-playlist-btn{
   flex-grow: 1;
   margin: 2px;
   border-radius: 5px;
@@ -359,7 +359,8 @@ body {
   background-color: var(--primary);
   color: var(--text-subtle);
   border: none;
-  max-width: 60px;
+  min-width: 40px;
+  max-width: 50px;
 }
 
 .audio-play-pause, .video-play-pause{
@@ -372,6 +373,8 @@ padding: 6px 12px;
   color: var(--text-subtle);
   font-size: var(--fs-sm);
   padding: 6px;
+  text-align: center;
+  margin-top: 3px;
 }
 
 /* Style for the audio element */
