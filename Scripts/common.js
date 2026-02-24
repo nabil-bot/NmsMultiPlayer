@@ -1,6 +1,17 @@
 let players = [];
 const controls = document.getElementById('globalControls');
 
+document.addEventListener("fullscreenchange", () => {
+  const fullscreenElement = document.fullscreenElement;
+  if (fullscreenElement) {
+    sendWebViewSignal('FULL_SCREEN_SIGNAL', 'true');
+  } else {
+    sendWebViewSignal('FULL_SCREEN_SIGNAL', 'false');
+  }
+});
+
+
+
 function isYouTubeUrl(url) {
   try {
     const parsed = new URL(url);
