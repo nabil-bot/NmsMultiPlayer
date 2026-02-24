@@ -34,7 +34,6 @@ class multiPlayer {
         this.fileInput.addEventListener('change', this.handleFileChange);
     }
 
-
     browse() {sendWebViewSignal('VIDEO_BROWSE', 'Browse');}
     paste() {
       pasteFromClipboard();
@@ -99,32 +98,17 @@ class multiPlayer {
           }
           this.ytPlaylist.push(...playlistVideos);
         }
-        
-        
         let videoId = isPlaylist
           ? getVideoId(playlistVideos[this.currentPlaylistIndex])
           : getVideoId(videoUrl);
-
-
-
         if (!videoId) return;
-
-  
-
         const videoWrapper = document.createElement("div");
         videoWrapper.classList.add("video-wrapper");
-
-
         const titleBar = document.createElement("div");
         titleBar.classList.add("remove-container");
-      
-
         const mediaLabel = document.createElement('label');
         // mediaLabel.textContent = '';
         mediaLabel.classList.add('MediaNameLable');
-        
-
-
         // Iframe
         const iframe = document.createElement("iframe");
         iframe.height = "252";
@@ -206,6 +190,7 @@ class multiPlayer {
           { text: "Set Pause Timer", iconClass: "fas fa-pause" },
           { text: "Set Play Timer", iconClass: "fas fa-play" },
           { text: "Copy Link", iconClass: "fas fa-copy" },
+          { text: "Remove Unplayable", iconClass: "fa-solid fa-video-slash fa-lg" },
            {text: 'Remove', iconClass: 'fa-solid fa-xmark fa-xl'}
         ];
 
@@ -230,9 +215,20 @@ class multiPlayer {
               setTimeout(() => (iframe.src = old), 25);
             }
 
-            if (item.text === "Set Pause Timer") pauseVideo();
-            if (item.text === "Set Play Timer") playVideo();
-            if (item.text === "Remove"){
+              if (item.text === "Set Pause Timer") {
+               pauseVideo();
+              }
+              if (item.text === "Set Play Timer")
+               {
+                playVideo();
+              }
+ 
+              if (item.text === "Remove Unplayable") 
+              {
+                this.cleanupNonEmbeddable();
+              }
+              if (item.text === "Remove") 
+              {
                 try{
                   removeVideo(videoWrapper, videoUrl);
                   if (isPlaylist){
@@ -465,16 +461,76 @@ class multiPlayer {
       }
     
     addToYtPlaylist(url) {
-      // alert(this.ytPlaylist.length);
       if (this.ytPlaylist.length === 0){
         this.addYoutubeVideo(url, 80, true, [url], 0, 0, true);
       } else{
         this.ytPlaylist.push(url);
         this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+        // 3. If the UI is live, tell it to refresh its view of the data
+        if (this.ytPlaylist_loaded && this.playlistViewInstance) {
+            this.playlistViewInstance.syncUI(); 
+        }
       }
     }
 
 
+    async cleanupNonEmbeddable() {
+            const originalCount = this.ytPlaylist.length;
+            
+            const processingPopup = new Popup({
+                title: "Scanning Playlist",
+                message: "Checking videos for playback restrictions...",
+                useBlur: true
+            });
+            processingPopup.show();
+
+            // 1. Map every URL to a check function (runs in parallel)
+            const checkPromises = this.ytPlaylist.map(async (url) => {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    const response = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`, { 
+                        signal: controller.signal 
+                    });
+                    clearTimeout(timeoutId);
+                    return response.ok ? url : null;
+                } catch {
+                    return null; // Restricted or timeout
+                }
+            });
+
+            // 2. Wait for all checks to finish
+            const results = await Promise.all(checkPromises);
+            const validPlaylist = results.filter(url => url !== null);
+
+            // 3. CRITICAL FIX: Update array in-place so PlaylistView sees the change
+            this.ytPlaylist.splice(0, this.ytPlaylist.length, ...validPlaylist);
+            
+            const removedCount = originalCount - this.ytPlaylist.length;
+
+            // 4. Adjust current index
+            if (this.currentPlaylistIndex >= this.ytPlaylist.length) {
+                this.currentPlaylistIndex = Math.max(0, this.ytPlaylist.length - 1);
+            }
+
+            // 5. Update UI (Now it will see the updated this.links!)
+            if (this.ytPlaylist_loaded && this.playlistViewInstance) {
+                await this.playlistViewInstance.refresh(this.currentPlaylistIndex);
+            }
+            this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+
+            // 6. Show Result
+            const message = removedCount > 0 
+                ? `Cleaned up ${removedCount} unplayable video(s).`
+                : "All videos are playable!";
+            processingPopup.hide();
+            new Popup({
+                title: "Cleanup Complete",
+                message: message,
+                confirmText: "Great",
+                useBlur: true
+            }).show();
+        }
     showPlaylist(iframe, mediaLabel) {
           const showPlaylistBtn = document.getElementById("show-playlist-btn");
           const icon = showPlaylistBtn.querySelector('i');

@@ -10,31 +10,53 @@ class PlaylistView {
     this.listElement = document.createElement('ul');
     this.listElement.className = 'yt-playlist-ul';
   }
-
   async init(activeIndex = 0) {
-    this.container.innerHTML = '';
-    this.container.appendChild(this.listElement);
-    
-    // Add sentinel for infinite scroll
-    this.sentinel = document.createElement('div');
-    this.sentinel.className = 'sentinel';
-    this.container.appendChild(this.sentinel);
+      this.container.innerHTML = '';
+      this.container.appendChild(this.listElement);
+      
+      this.sentinel = document.createElement('div');
+      this.sentinel.className = 'sentinel';
+      this.container.appendChild(this.sentinel);
 
-    this.setupInfiniteScroll();
-    await this.loadNextChunk();
-    this.highlightCurrent(activeIndex);
+      // ADD THIS: Single listener for the whole list
+      this.listElement.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          const draggingItem = this.listElement.querySelector('.dragging');
+          if (!draggingItem) return;
+
+          // Find the item we are hovering over
+          const siblings = [...this.listElement.querySelectorAll('.playlist-item:not(.dragging)')];
+          
+          // Calculate the next sibling based on mouse position
+          const nextSibling = siblings.find(sibling => {
+              const box = sibling.getBoundingClientRect();
+              // Check if mouse is above the middle of the sibling
+              return e.clientY <= box.top + box.height / 2;
+          });
+
+          this.listElement.insertBefore(draggingItem, nextSibling);
+      });
+
+      this.setupInfiniteScroll();
+      await this.loadNextChunk();
+      this.highlightCurrent(activeIndex);
   }
-
   setupInfiniteScroll() {
+        if (this.observer) this.observer.disconnect();
+
         this.observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && !this.isLoading) {
-                this.loadNextChunk();
-            }
-        }, { root: this.container, threshold: 0.1 });
+          // Add a small log here to debug: console.log('Sentinel intersecting:', entries[0].isIntersecting);
+          if (entries[0].isIntersecting && !this.isLoading) {
+            this.loadNextChunk();
+          }
+        }, { 
+          root: this.container, // Ensure this div has overflow-y: auto and a height
+          rootMargin: '100px',   // Start loading 100px before the user reaches the bottom
+          threshold: 0.1 
+        });
 
         this.observer.observe(this.sentinel);
-            }       
-
+      }
   highlightCurrent(index) {
     const items = this.listElement.querySelectorAll('.playlist-item');
     items.forEach(item => item.classList.remove('active-video'));
@@ -45,7 +67,6 @@ class PlaylistView {
       activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   }
-
   async loadNextChunk() {
     if (this.isLoading || this.loadedIndex >= this.links.length) return;
     this.isLoading = true;
@@ -63,7 +84,6 @@ class PlaylistView {
     this.loadedIndex = end;
     this.isLoading = false;
   }
-
  createListItem(data, index) {
     const li = document.createElement('li');
     li.className = 'playlist-item';
@@ -85,29 +105,20 @@ class PlaylistView {
         </div>
       </div>
     `;
-
-    // 1. ADDED: Click to Play logic
     li.addEventListener('click', (e) => {
-        // Don't trigger play if clicking the menu buttons
         if (e.target.closest('.item-menu-container')) return;
         this.callbacks.onItemClick(index);
         this.highlightCurrent(index);
     });
-
-    // 2. ADDED: Toggle Menu logic (This makes the Remove button appear)
     const dotBtn = li.querySelector('.three-dot-btn');
     dotBtn.onclick = (e) => {
-        e.stopPropagation(); // Prevents the video from playing when clicking menu
-        
-        // Close any other open menus first
+        e.stopPropagation(); 
         this.listElement.querySelectorAll('.playlist-item').forEach(item => {
             if (item !== li) item.classList.remove('menu-open');
         });
 
         li.classList.toggle('menu-open');
     };
-
-    // 3. Keep your existing Delete logic
     const deleteBtn = li.querySelector('.delete-action');
     deleteBtn.onclick = (e) => {
         e.stopPropagation();
@@ -122,45 +133,31 @@ class PlaylistView {
             this.callbacks.onDelete(index);
         }, 200);
     };
-
-    // 4. ADDED: Global click listener to close menu when clicking outside
-    // We use a named function so we could theoretically remove it, 
-    // but for simplicity, we'll just check if the element still exists.
     document.addEventListener('click', (e) => {
         if (!li.contains(e.target)) li.classList.remove('menu-open');
-    }, { once: true }); // 'once' helps with cleanup
-
+    }, { once: true }); 
     this.addDragListeners(li);
     return li;
 }
 
-
   handleItemDeletion(removedIndex) {
-    // Re-index the remaining DOM elements
-    const items = this.listElement.querySelectorAll('.playlist-item');
-    items.forEach(item => {
-        let currentIndex = parseInt(item.dataset.index);
-        if (currentIndex > removedIndex) {
-            item.dataset.index = currentIndex - 1;
+        const items = this.listElement.querySelectorAll('.playlist-item');
+        items.forEach(item => {
+            let currentIndex = parseInt(item.dataset.index);
+            if (currentIndex > removedIndex) {
+                item.dataset.index = currentIndex - 1;
+            }
+        });
+        this.loadedIndex--;
+        if (this.links.length === 0) {
+            this.container.innerHTML = '<div class="sentinel">Playlist is empty</div>';
         }
-    });
-
-    // Update the local tracking of loadedIndex
-    this.loadedIndex--;
-
-    // If the list is now empty, show a message
-    if (this.links.length === 0) {
-        this.container.innerHTML = '<div class="sentinel">Playlist is empty</div>';
     }
-}
-
-  // ... (fetchMetadata and addDragListeners remain similar to previous version)
   async fetchMetadata(url) {
     const videoId = url.split('v=')[1]?.split('&')[0];
     const thumb = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
     
     try {
-      // Use a timeout to prevent hanging on one slow link
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), 3000);
 
@@ -175,26 +172,68 @@ class PlaylistView {
   }
 
   addDragListeners(li) {
-    li.addEventListener('dragstart', () => li.classList.add('dragging'));
-    li.addEventListener('dragend', () => {
-      li.classList.remove('dragging');
-      this.handleSortChange();
-    });
-    
-    li.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      const draggingItem = this.container.querySelector('.dragging');
-      const siblings = [...this.listElement.querySelectorAll('.playlist-item:not(.dragging)')];
-      const nextSibling = siblings.find(sib => e.clientY <= sib.offsetTop + sib.offsetHeight / 2);
-      this.listElement.insertBefore(draggingItem, nextSibling);
-    });
+      li.addEventListener('dragstart', () => {
+          // Use a timeout to ensure the class is added after the drag image is created
+          setTimeout(() => li.classList.add('dragging'), 0);
+      });
+
+      li.addEventListener('dragend', () => {
+          li.classList.remove('dragging');
+          this.handleSortChange();
+      });
   }
+
+
   handleSortChange() {
-    const items = [...this.listElement.querySelectorAll('.playlist-item')];
-    // Rebuild the link list based on current DOM order
-    const newOrder = items.map(li => this.links[parseInt(li.dataset.index)]);
-    this.callbacks.onReorder(newOrder);
+          const items = [...this.listElement.querySelectorAll('.playlist-item')];
+          
+          // 1. Create the new links array based on the current DOM order
+          // We use the OLD data-index to find which URL was there
+          const newOrder = items.map(li => this.links[parseInt(li.dataset.index)]);
+          
+          // 2. IMPORTANT: Update the data-index attributes to match the NEW order
+          items.forEach((li, newIdx) => {
+              li.dataset.index = newIdx;
+          });
+
+          // 3. Update the source of truth
+          // Since this.links is a reference, this updates the main ytPlaylist too
+          this.links.splice(0, this.links.length, ...newOrder);
+
+          // 4. Notify main class
+          this.callbacks.onReorder(newOrder);
+      }
+  async syncUI() {
+      if (!this.isLoading && this.loadedIndex < this.links.length) {
+          await this.loadNextChunk();
+      }
+      if (this.sentinel) {
+          this.sentinel.style.display = 'flex';
+          this.container.appendChild(this.sentinel);
+      }
   }
+
+  async refresh(activeIndex = 0) {
+        // Stop any current loading processes
+        this.isLoading = false;
+        
+        // Reset the counter
+        this.loadedIndex = 0;
+        
+        // Clear the UI
+        this.listElement.innerHTML = '';
+        
+        // Re-show the sentinel in case it was hidden
+        if (this.sentinel) {
+            this.sentinel.style.display = 'flex';
+        }
+
+        // Load the first batch of the filtered list
+        await this.loadNextChunk();
+        
+        // Re-highlight the active video
+        this.highlightCurrent(activeIndex);
+    }
   destroy() {
     if (this.observer) {
         this.observer.disconnect();
@@ -205,5 +244,4 @@ class PlaylistView {
     this.listElement = null;
     console.log("PlaylistView destroyed and memory cleared.");
 }
-
 }
