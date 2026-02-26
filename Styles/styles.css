@@ -81,16 +81,12 @@ font-size: 12px;
 .playlist-navigation{
   display: flex;
   justify-content: space-between;
-
-  padding-right: 5%;
 }
 
 .auto-play-checkbox-container{
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 5%;
-  padding-right: 5%;
   gap: 4px;
 }
 .auto-play-label{

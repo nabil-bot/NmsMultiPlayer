@@ -89,9 +89,8 @@ class PlaylistView {
     li.className = 'playlist-item';
     li.dataset.index = index;
     li.draggable = true;
-
+    //  <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div> 
     li.innerHTML = `
-      <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>
       <div class="thumb-wrapper">
         <img src="${data.thumb}" class="playlist-thumb" loading="lazy">
       </div>

@@ -33,7 +33,6 @@ class multiPlayer {
         this.clearBtn.addEventListener('click', this.clear.bind(this));
         this.fileInput.addEventListener('change', this.handleFileChange);
     }
-
     browse() {sendWebViewSignal('VIDEO_BROWSE', 'Browse');}
     paste() {
       pasteFromClipboard();
@@ -81,21 +80,28 @@ class multiPlayer {
         }else{
           this.addYoutubeVideo(videoUrl);
         }
-
       }
     }
-
     async addYoutubeVideo(videoUrl, volume=70, isPlaylist=false, playlistVideos=[], timeFrame=0, playlistIndex=0, customPlaylist=false) {
       try{
         
         if (isPlaylist){
-          this.playlistVolume = volume;
+          
           if (this.ytPlaylist.length > 0){
-            const isConfirmed = confirm("Do you want to add to curretn playlist?");
+            const isConfirmed = confirm("There is already an playlist\nDo you want to add to curretn playlist?");
             if (!isConfirmed) return  
+            
+            this.playlistVolume = volume;
+            this.ytPlaylist.push(...playlistVideos);
+            this.updatePlaylistLabel()
+            if (this.ytPlaylist_loaded && this.playlistViewInstance) {
+                this.playlistViewInstance.syncUI(); 
+              }
+            return
           } else{
             this.currentPlaylistIndex = playlistIndex
           }
+          this.playlistVolume = volume;
           this.ytPlaylist.push(...playlistVideos);
         }
         let videoId = isPlaylist
@@ -190,12 +196,14 @@ class multiPlayer {
           { text: "Set Pause Timer", iconClass: "fas fa-pause" },
           { text: "Set Play Timer", iconClass: "fas fa-play" },
           { text: "Copy Link", iconClass: "fas fa-copy" },
+          { text: "Save as Playlist", iconClass: "fas fa-list" },
           { text: "Remove Unplayable", iconClass: "fa-solid fa-video-slash fa-lg" },
            {text: 'Remove', iconClass: 'fa-solid fa-xmark fa-xl'}
         ];
-
+        const onlyForPlaylist = ['Remove Unplayable', 'Save as Playlist'];
 
         menuItems.forEach((item) => {
+          if (!isPlaylist && onlyForPlaylist.includes(item.text)) return;
           const el = document.createElement("div");
           el.className = "menu-item";
 
@@ -262,6 +270,9 @@ class multiPlayer {
           menu.appendChild(el);
         });
 
+
+
+
         menuBtn.onclick = (e) => {
           e.stopPropagation();
           const r = menuBtn.getBoundingClientRect();
@@ -279,7 +290,7 @@ class multiPlayer {
 
         if (isPlaylist) {
           this.playlistLabel = document.createElement("label");
-          this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+          this.updatePlaylistLabel()
           this.playlistLabel.className = 'playlistSerial'
           
           
@@ -387,7 +398,10 @@ class multiPlayer {
         showHideGlobarControls();
       
       } // end of addYoutubeVideo
-
+    updatePlaylistLabel() {
+      if (this.playlistLabel)
+        this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+    }  
     changePlaylistVideo(dir, iframe, mediaLabel) {
           if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) 
             return;
@@ -396,8 +410,7 @@ class multiPlayer {
           this.currentPlaylistIndex =
             (this.currentPlaylistIndex + dir + this.ytPlaylist.length) %
             this.ytPlaylist.length;
-          if (this.playlistLabel)
-            this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+          this.updatePlaylistLabel()
           const newUrl = this.ytPlaylist[this.currentPlaylistIndex];
           const newId = getVideoId(newUrl);
 
@@ -465,14 +478,13 @@ class multiPlayer {
         this.addYoutubeVideo(url, 80, true, [url], 0, 0, true);
       } else{
         this.ytPlaylist.push(url);
-        this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+        this.updatePlaylistLabel()
         // 3. If the UI is live, tell it to refresh its view of the data
         if (this.ytPlaylist_loaded && this.playlistViewInstance) {
             this.playlistViewInstance.syncUI(); 
         }
       }
     }
-
 
     async cleanupNonEmbeddable() {
             const originalCount = this.ytPlaylist.length;
@@ -512,13 +524,11 @@ class multiPlayer {
             if (this.currentPlaylistIndex >= this.ytPlaylist.length) {
                 this.currentPlaylistIndex = Math.max(0, this.ytPlaylist.length - 1);
             }
-
             // 5. Update UI (Now it will see the updated this.links!)
             if (this.ytPlaylist_loaded && this.playlistViewInstance) {
                 await this.playlistViewInstance.refresh(this.currentPlaylistIndex);
             }
-            this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
-
+            this.updatePlaylistLabel()
             // 6. Show Result
             const message = removedCount > 0 
                 ? `Cleaned up ${removedCount} unplayable video(s).`
@@ -596,8 +606,7 @@ class multiPlayer {
                           this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
                       }
 
-                      // 4. Update the Label (1/9 etc)
-                      this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
+                      this.updatePlaylistLabel()
                   },
                     onReorder: (newList) => {
                         this.ytPlaylist = newList;

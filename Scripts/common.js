@@ -10,8 +10,6 @@ document.addEventListener("fullscreenchange", () => {
   }
 });
 
-
-
 function isYouTubeUrl(url) {
   try {
     const parsed = new URL(url);
@@ -26,8 +24,6 @@ function isYouTubeUrl(url) {
     return false; // invalid URL
   }
 }
-
-
 function pasteFromClipboard() {
   try {
     navigator.clipboard.readText()
