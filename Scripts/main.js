@@ -23,6 +23,7 @@ class multiPlayer {
         this.clearAllButton = document.getElementById('clear-all-button');
         this.replayButton = document.getElementById('replay-button');
         this.fileInput = document.getElementById('file-input');
+        this.playlistInput = document.getElementById('playlist-input');
         this.playAllButton.addEventListener('click', handlePlayAll);
         this.pauseAllButton.addEventListener('click', handlePauseAll);
         this.replayButton.addEventListener('click', replayAll);
@@ -32,12 +33,29 @@ class multiPlayer {
         this.pasteBtn.addEventListener('click', this.paste.bind(this));
         this.clearBtn.addEventListener('click', this.clear.bind(this));
         this.fileInput.addEventListener('change', this.handleFileChange);
+        this.playlistInput.addEventListener('change', this.handlePlaylistChange);
     }
     browse() {sendWebViewSignal('VIDEO_BROWSE', 'Browse');}
     paste() {
       pasteFromClipboard();
     }
     clear() {document.getElementById('video-url').value = '';}
+
+    handlePlaylistChange = (event) => {
+        // Convert FileList to a real Array
+        const files = Array.from(event.target.files); 
+
+        if (files.length > 0) {
+          const videoPlaylistData = files.map(file => ({
+            name: file.name,
+            url: URL.createObjectURL(file) 
+          }));
+          
+          // Ensure fileInput is defined or grabbed from the event
+          const playlist = new LocalVideoPlaylist(videoPlaylistData, event.target);
+        }
+      }
+      
     handleFileChange = (event) => {
         const files = event.target.files;
         if (files.length > 0) {

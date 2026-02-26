@@ -84,12 +84,15 @@ class PlaylistView {
     this.loadedIndex = end;
     this.isLoading = false;
   }
- createListItem(data, index) {
+
+
+
+createListItem(data, initialIndex) {
     const li = document.createElement('li');
     li.className = 'playlist-item';
-    li.dataset.index = index;
+    li.dataset.index = initialIndex; // This attribute will be updated by handleItemDeletion
     li.draggable = true;
-    //  <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div> 
+
     li.innerHTML = `
       <div class="thumb-wrapper">
         <img src="${data.thumb}" class="playlist-thumb" loading="lazy">
@@ -104,23 +107,31 @@ class PlaylistView {
         </div>
       </div>
     `;
+
+    // CLICK HANDLER: Always use the live dataset value
     li.addEventListener('click', (e) => {
         if (e.target.closest('.item-menu-container')) return;
-        this.callbacks.onItemClick(index);
-        this.highlightCurrent(index);
+        const currentIndex = parseInt(li.dataset.index); 
+        this.callbacks.onItemClick(currentIndex);
+        this.highlightCurrent(currentIndex);
     });
+
     const dotBtn = li.querySelector('.three-dot-btn');
     dotBtn.onclick = (e) => {
         e.stopPropagation(); 
         this.listElement.querySelectorAll('.playlist-item').forEach(item => {
             if (item !== li) item.classList.remove('menu-open');
         });
-
         li.classList.toggle('menu-open');
     };
+
+    // DELETE HANDLER: Fetch the index AT THE MOMENT of click
     const deleteBtn = li.querySelector('.delete-action');
     deleteBtn.onclick = (e) => {
         e.stopPropagation();
+        
+        // IMPORTANT: Get the index now, not the one from the function argument
+        const indexToDelete = parseInt(li.dataset.index);
         
         li.style.transition = 'opacity 0.2s, transform 0.2s';
         li.style.opacity = '0';
@@ -128,30 +139,51 @@ class PlaylistView {
         
         setTimeout(() => {
             li.remove();
-            this.handleItemDeletion(index);
-            this.callbacks.onDelete(index);
+            this.handleItemDeletion(indexToDelete);
+            this.callbacks.onDelete(indexToDelete);
         }, 200);
     };
-    document.addEventListener('click', (e) => {
-        if (!li.contains(e.target)) li.classList.remove('menu-open');
-    }, { once: true }); 
+
+    // Auto-close menu logic
+    const closeMenu = (e) => {
+        if (!li.contains(e.target)) {
+            li.classList.remove('menu-open');
+            document.removeEventListener('click', closeMenu);
+        }
+    };
+    dotBtn.addEventListener('click', () => {
+        document.addEventListener('click', closeMenu);
+    });
+
     this.addDragListeners(li);
     return li;
 }
 
-  handleItemDeletion(removedIndex) {
-        const items = this.listElement.querySelectorAll('.playlist-item');
-        items.forEach(item => {
-            let currentIndex = parseInt(item.dataset.index);
-            if (currentIndex > removedIndex) {
-                item.dataset.index = currentIndex - 1;
-            }
-        });
-        this.loadedIndex--;
-        if (this.links.length === 0) {
-            this.container.innerHTML = '<div class="sentinel">Playlist is empty</div>';
+
+
+handleItemDeletion(removedIndex) {
+    // 1. REMOVE the splice line from here! 
+    // The main class is already doing this.
+
+    // 2. Force a full re-index of the remaining DOM elements
+    const items = this.listElement.querySelectorAll('.playlist-item');
+    items.forEach((item, newIdx) => {
+        item.dataset.index = newIdx;
+    });
+
+    // 3. Update the tracking index
+    this.loadedIndex = items.length;
+
+    // 4. Handle Empty State
+    if (items.length === 0) {
+        this.listElement.innerHTML = '';
+        if (this.sentinel) {
+            this.sentinel.innerHTML = 'Playlist is empty';
+            this.sentinel.style.display = 'flex';
         }
     }
+}
+
   async fetchMetadata(url) {
     const videoId = url.split('v=')[1]?.split('&')[0];
     const thumb = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;

@@ -1,0 +1,107 @@
+/* Playlist Overlay Container */
+.playlist-overlay {
+    position: absolute;
+    top: 45px; /* Adjust based on your header height */
+    left: var(--space-sm);
+    right: var(--space-sm);
+    bottom: 90px; /* Space for timeline and controls */
+    background: var(--bg-surface);
+    color: var(--text-bold);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-standard);
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-main);
+}
+
+/* Individual Playlist Item */
+.playlist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--border);
+    cursor: grab;
+    transition: background 0.2s ease, transform 0.1s ease;
+    background: transparent;
+}
+
+.playlist-item:last-child {
+    border-bottom: none;
+}
+
+.playlist-item:active {
+    cursor: grabbing;
+}
+
+/* Item Name Text */
+.playlist-item-name {
+    flex-grow: 1;
+    font-size: var(--fs-sm);
+    color: var(--text-subtle);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: var(--space-md);
+}
+
+.playlist-item:hover {
+    background: var(--accent);
+}
+
+/* Active State */
+.playlist-item.active {
+    background: var(--primary);
+    border-left: 4px solid var(--active-Primary);
+}
+
+.playlist-item.active .playlist-item-name {
+    color: var(--text-bold);
+    font-weight: var(--fw-semibold);
+}
+
+/* Remove Button */
+.playlist-item-remove {
+    background: transparent;
+    border: none;
+    color: var(--text-subtle);
+    font-size: var(--fs-base);
+    padding: var(--space-xs);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.playlist-item-remove:hover {
+    color: #ff4d4d; /* Red for deletion */
+}
+
+/* Drag & Drop Visual Feedback */
+.playlist-item.dragging {
+    opacity: 0.5;
+    background: var(--click-Primary);
+}
+
+.playlist-item.drag-over {
+    border-top: 2px solid var(--active-Primary);
+    background: var(--accent);
+}
+
+/* Custom Scrollbar for the Playlist Overlay */
+.playlist-overlay::-webkit-scrollbar {
+    width: 6px;
+}
+
+.playlist-overlay::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+.playlist-overlay::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: var(--radius-md);
+}

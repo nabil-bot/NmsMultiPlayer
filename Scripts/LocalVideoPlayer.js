@@ -1,13 +1,9 @@
 
 async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.8, fileInput) {
   return new Promise((resolve, reject) => {
-    // 1. Setup Containers and Video Element
-    
     const videosContainer = document.getElementById('videos-container');
     const videoContainer = document.createElement('div');
     videoContainer.classList.add('video-local-container');
-
-    // Create the HTML5 Video element
     const videoPlayer = document.createElement('video');
 
     videoPlayer.className = 'local-video-player';
@@ -16,8 +12,6 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     videoPlayer.loop = false;
     // Set default volume, if you want a video-specific default
     videoPlayer.volume = defaultVolume;
-
-    // 2. Play/Pause Button
     const playPauseBtn = document.createElement('button');
     playPauseBtn.classList.add('video-play-pause');
     playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
@@ -39,8 +33,6 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     playPauseBtn.addEventListener('click', function() {
       playPauseVideoPlayer();
     });
-
-    // 3. Timeline Slider (Scrubbing)
     const sliderContainer = document.createElement('div');
     sliderContainer.classList.add('slider-container');
     const timelineSlider = document.createElement('input');
@@ -115,8 +107,6 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
         }
 
     } else {
-        // --- ENTER FULLSCREEN ---
-        // Request fullscreen on the video player element
         videoPlayer.requestFullscreen()
             .then(() => {
                 // Lock screen orientation to Landscape only AFTER fullscreen is active
@@ -435,6 +425,3 @@ async function addLocalVideoPlayer(url, name="", timeFrame = 0, defaultVolume=0.
     resolve();
   });
 }
-
-
-

@@ -15,7 +15,9 @@
   
   <link rel="stylesheet" href="./Styles/message.css">
 
-  <link rel="stylesheet" href="./Styles/playlist.css"
+  <link rel="stylesheet" href="./Styles/playlist.css">
+  <link rel="stylesheet" href="./Styles/localPlaylist.css"> 
+  
 </head>
 <body>
   <main id="main-contents-container">
@@ -48,6 +50,10 @@
     
 	  <input type="file" id="file-input" class="hidden-input" accept="audio/*,video/*" multiple>
 	  <label for="file-input" class="file-input-label"><i class="fa-regular fa-file"></i> Add a local file</label>
+
+
+    <input type="file" id="playlist-input" class="hidden-input" accept="audio/*,video/*" multiple>
+	  <label for="playlist-input" class="file-input-label"><i class="fa fa-list-ul" aria-hidden="true"></i> Add a local playlist</label>
 	  </div>
     <br>
     <br>
@@ -90,6 +96,7 @@
     <script src="./Scripts/dynamicList.js"></script>
     <script src="./Scripts/audioPlayer.js"></script>
     <script src="./Scripts/LocalVideoPlayer.js"></script>
+    <script src="./Scripts/localVideoPlaylist.js"></script>
     <script src="./Scripts/main.js"></script>
     <script src="./Scripts/timer.js"></script>
 </div>
