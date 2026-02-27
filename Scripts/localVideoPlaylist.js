@@ -67,6 +67,9 @@ class LocalVideoPlaylist {
     this.timelineSlider.min = '0';
     this.timelineSlider.value = '0';
     this.timelineSlider.step = '1';
+    this.timelineSlider.disabled = true;
+
+    sliderContainer.addEventListener('mousemove', () => this.enableSlider(this.timelineSlider));
 
     const timeLabels = document.createElement('div');
     timeLabels.classList.add('timelabelContainer');
@@ -123,7 +126,6 @@ class LocalVideoPlaylist {
     };
 
     mainBtns.append(prevBtn, this.playPauseBtn, nextBtn, backwardButton, forwardButton, listBtn, fullscreenBtn);
-
     // Volume
     const volCont = document.createElement('div');
     volCont.classList.add('volume-container');
@@ -136,19 +138,15 @@ class LocalVideoPlaylist {
     this.volumeSlider.max = 1;
     this.volumeSlider.step = 0.01;
     this.volumeSlider.value = 0.8;
+    this.volumeSlider.disabled = true;
     volCont.append(speakerIcon, this.volumeSlider);
-
+    volCont.addEventListener('mousemove', () => this.enableVolumeSlider());
     controls.appendChild(mainBtns);
     controls.appendChild(volCont);
-
-    // Assembly
     this.container.append(header, this.videoPlayer, this.playlistOverlay, sliderContainer, controls);
     videosContainer.appendChild(this.container);
-
     this.attachListeners(fullscreenBtn);
   }
-
-  // Helper to render the list of videos in the overlay
   renderPlaylistItems() {
     this.playlistOverlay.innerHTML = '';
     
@@ -211,6 +209,28 @@ class LocalVideoPlaylist {
 
       this.playlistOverlay.appendChild(item);
     });
+  }
+
+  enableSlider(slider) {
+    slider.disabled = false;
+    try{
+      clearTimeout(this.disableTimer);
+    } catch (error) {
+    }
+    this.disableTimer = setTimeout(() => {
+      slider.disabled = true;
+    }, 3500);
+  }
+
+  enableVolumeSlider() {
+    this.volumeSlider.disabled = false;
+    try{
+      clearTimeout(this.disableVolumeTimer);
+    } catch (error) {
+    }
+    this.disableVolumeTimer = setTimeout(() => {
+      this.volumeSlider.disabled = true;
+    }, 3500);
   }
 
   attachListeners(fullscreenBtn) {
@@ -383,6 +403,9 @@ class LocalVideoPlaylist {
         this.renderPlaylistItems();
         }
     }
+
+
+
 
   setTimer(type) {
     get_timer_time(`Set ${type} Timer`).then((time) => {

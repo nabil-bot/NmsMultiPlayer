@@ -90,6 +90,11 @@ class multiPlayer {
       const videoUrlInput = document.getElementById('video-url');
       let videoUrl = videoUrlInput.value.trim();
 
+      if (videoUrl.includes("facebook")) {
+        addFacebookVideoPlayer(videoUrl, 70, document.getElementById("videos-container"));
+        return
+      }
+
       if (isYouTubeUrl(videoUrl)) {
         if (videoUrl.includes(",")){
           const splitedUrls = videoUrl.split(",");
@@ -99,7 +104,10 @@ class multiPlayer {
           this.addYoutubeVideo(videoUrl);
         }
       }
-    }
+
+      } // end of addVideo
+
+
     async addYoutubeVideo(videoUrl, volume=70, isPlaylist=false, playlistVideos=[], timeFrame=0, playlistIndex=0, customPlaylist=false) {
       try{
         
@@ -288,9 +296,6 @@ class multiPlayer {
           menu.appendChild(el);
         });
 
-
-
-
         menuBtn.onclick = (e) => {
           e.stopPropagation();
           const r = menuBtn.getBoundingClientRect();
@@ -377,7 +382,7 @@ class multiPlayer {
 
 
         // ---- PLAYER INITIALIZATION ---- //
-        this.initializeYouTubeAPI(iframe, volume, timeFrame, mediaLabel);
+        this.initializeYouTubeAPI(iframe, volume, timeFrame, mediaLabel, isPlaylist);
 
 
         // ---- SAVE URL PROPERTIES ---- //
@@ -420,77 +425,153 @@ class multiPlayer {
       if (this.playlistLabel)
         this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
     }  
-    changePlaylistVideo(dir, iframe, mediaLabel) {
-          if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) 
-            return;
-          if (!this.autoPlayCheckBox.checked) return;
+    // changePlaylistVideo(dir, iframe, mediaLabel) {
+    //       if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) 
+    //         return;
+    //       if (!this.autoPlayCheckBox.checked) return;
 
-          this.currentPlaylistIndex =
-            (this.currentPlaylistIndex + dir + this.ytPlaylist.length) %
-            this.ytPlaylist.length;
-          this.updatePlaylistLabel()
-          const newUrl = this.ytPlaylist[this.currentPlaylistIndex];
-          const newId = getVideoId(newUrl);
+    //       this.currentPlaylistIndex =
+    //         (this.currentPlaylistIndex + dir + this.ytPlaylist.length) %
+    //         this.ytPlaylist.length;
+    //       this.updatePlaylistLabel()
+    //       const newUrl = this.ytPlaylist[this.currentPlaylistIndex];
+    //       const newId = getVideoId(newUrl);
 
-          iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
+    //       iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
           
-          this.initializeYouTubeAPI(iframe, this.playlistVolume, 0, mediaLabel);
+    //       this.initializeYouTubeAPI(iframe, this.playlistVolume, 0, mediaLabel, true);
 
-          // Update the Playlist UI Highlight
-          if (this.playlistViewInstance) {
-              this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
-          }
+    //       // Update the Playlist UI Highlight
+    //       if (this.playlistViewInstance) {
+    //           this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
+    //       }
 
-          // const dic = getCookie("customListDic") || {};
-          // dic.currentIndex = this.currentPlaylistIndex;
-          // setCookie("customListDic", dic, 14);
+    //       // const dic = getCookie("customListDic") || {};
+    //       // dic.currentIndex = this.currentPlaylistIndex;
+    //       // setCookie("customListDic", dic, 14);
           
-        }  
+    //     }  
 
-   initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel) {
-    // Store the volume on the iframe element so the API can always find the "current" target
-    iframe.dataset.targetVolume = volume_;
+  //  initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel, isPlaylist) {
+  //   // Store the volume on the iframe element so the API can always find the "current" target
+  //   iframe.dataset.targetVolume = volume_;
 
-    const createPlayer = () => {
-        const player = new YT.Player(iframe, {
-            events: {
-                onReady: (e) => {
-                    // Always pull the volume from the dataset, which is updated per-call
-                    const getLatestVol = () => Number(iframe.dataset.targetVolume);
+  //   const createPlayer = () => {
+  //       const player = new YT.Player(iframe, {
+  //           events: {
+  //               onReady: (e) => {
+  //                   // Always pull the volume from the dataset, which is updated per-call
+  //                   const getLatestVol = () => Number(iframe.dataset.targetVolume);
                     
-                    e.target.setVolume(getLatestVol());
-                    e.target.seekTo(timeFrame);
+  //                   e.target.setVolume(getLatestVol());
+  //                   e.target.seekTo(timeFrame);
                     
-                    if (mediaLabel) {
-                        const videoData = e.target.getVideoData();
-                        mediaLabel.textContent = videoData.title;
-                    }
+  //                   if (mediaLabel) {
+  //                       const videoData = e.target.getVideoData();
+  //                       mediaLabel.textContent = videoData.title;
+  //                   }
 
-                    let checkCount = 0;
-                    const forceVol = setInterval(() => {
-                        e.target.setVolume(getLatestVol());
-                        checkCount++;
-                        if (checkCount > 10) clearInterval(forceVol); // Increased to 10 for safety
-                    }, 200);
+  //                   let checkCount = 0;
+  //                   const forceVol = setInterval(() => {
+  //                       e.target.setVolume(getLatestVol());
+  //                       checkCount++;
+  //                       if (checkCount > 10) clearInterval(forceVol); // Increased to 10 for safety
+  //                   }, 200);
 
-                    if (!players.includes(e.target)) players.push(e.target);
-                },
-                onStateChange: (e) => {
-                    if (e.data === YT.PlayerState.ENDED) {
-                        this.changePlaylistVideo(+1, iframe, mediaLabel);
-                    }
-                },
-            },
-        });
+  //                   if (!players.includes(e.target)) players.push(e.target);
+  //               },
+  //               onStateChange: (e) => {
+  //                   if (e.data === YT.PlayerState.ENDED) {
+  //                     if (isPlaylist){
+  //                       this.changePlaylistVideo(+1, iframe, mediaLabel);
+  //                     }    
+  //                   }
+  //               },
+  //           },
+  //       });
+  //   }
+
+  //   const wait = () => {
+  //       if (!window.YT || !YT.Player) return setTimeout(wait, 80);
+  //         createPlayer();
+  //         }
+  //       wait();
+  //     }
+
+  changePlaylistVideo(dir, iframe, mediaLabel) {
+        if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) return;
+
+        this.currentPlaylistIndex = (this.currentPlaylistIndex + dir + this.ytPlaylist.length) % this.ytPlaylist.length;
+        this.updatePlaylistLabel();
+        
+        const newUrl = this.ytPlaylist[this.currentPlaylistIndex];
+        const newId = getVideoId(newUrl);
+
+        // Find the existing player instance for this iframe
+        const player = players.find(p => p.getIframe() === iframe);
+
+        if (player && typeof player.loadVideoById === 'function') {
+            // Use the API to change the video smoothly
+            player.loadVideoById(newId);
+            
+            // Update label after a short delay so the API has time to fetch the new title
+            setTimeout(() => {
+                if (mediaLabel) mediaLabel.textContent = player.getVideoData().title;
+            }, 500);
+        } else {
+            // Fallback if player isn't ready: Update SRC (standard way)
+            iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
+        }
+
+        if (this.playlistViewInstance) {
+            this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
+        }
     }
 
-    const wait = () => {
-        if (!window.YT || !YT.Player) return setTimeout(wait, 80);
-          createPlayer();
+    initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel, isPlaylist) {
+          iframe.dataset.targetVolume = volume_;
+
+          // Check if this iframe already has a player attached to it
+          let existingPlayer = players.find(p => p.getIframe() === iframe);
+
+          if (existingPlayer) {
+              // If it exists, just update its properties/video, don't make a new one
+              existingPlayer.setVolume(Number(volume_));
+              return; 
           }
-        wait();
+
+          const createPlayer = () => {
+              const player = new YT.Player(iframe, {
+                  events: {
+                      onReady: (e) => {
+                          e.target.setVolume(Number(iframe.dataset.targetVolume));
+                          e.target.seekTo(timeFrame);
+                          
+                          if (mediaLabel) {
+                              const videoData = e.target.getVideoData();
+                              mediaLabel.textContent = videoData.title;
+                          }
+                          if (!players.includes(e.target)) players.push(e.target);
+                      },
+                      onStateChange: (e) => {
+                          // CRITICAL: Only trigger auto-advance if THIS specific instance is a playlist
+                          if (e.data === YT.PlayerState.ENDED && isPlaylist) {
+                              // Check checkbox here too so it doesn't fire if disabled
+                              if (this.autoPlayCheckBox && this.autoPlayCheckBox.checked) {
+                                  this.changePlaylistVideo(+1, iframe, mediaLabel);
+                              }
+                          }
+                      },
+                  },
+              });
+          }
+
+          const wait = () => {
+              if (!window.YT || !YT.Player) return setTimeout(wait, 80);
+              createPlayer();
+          }
+          wait();
       }
-    
     addToYtPlaylist(url) {
       if (this.ytPlaylist.length === 0){
         this.addYoutubeVideo(url, 80, true, [url], 0, 0, true);
