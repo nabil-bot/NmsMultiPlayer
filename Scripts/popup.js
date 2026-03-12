@@ -1,76 +1,92 @@
 class Popup {
-  constructor({ title, message, confirmText = 'OK', cancelText = null, onConfirm = null, useBlur = false }) {
+  constructor({ title, message, confirmText = 'OK', cancelText = null, onConfirm = null, useBlur = false, isInput = false, placeholder = '' }) {
     this.title = title;
     this.message = message;
     this.confirmText = confirmText;
     this.cancelText = cancelText;
     this.onConfirm = onConfirm;
     this.useBlur = useBlur;
+    this.isInput = isInput; // Toggle for text field
+    this.placeholder = placeholder;
     this.overlay = null;
   }
 
-  // Create the elements
   _createMarkup() {
     this.overlay = document.createElement('div');
     this.overlay.className = 'popup-overlay';
     
+    // Create the input HTML if isInput is true
+    const inputHTML = this.isInput 
+      ? `<input type="text" id="popup-input" class="popup-input" placeholder="${this.placeholder}" autofocus>`
+      : '';
+
     this.overlay.innerHTML = `
       <div class="popup-card">
         <div class="popup-header">${this.title}</div>
-        <div class="popup-body">${this.message}</div>
+        <div class="popup-body">
+          <p>${this.message}</p>
+          ${inputHTML} 
+        </div>
         <div class="popup-actions">
           ${this.cancelText ? `<button class="popup-btn btn-secondary" id="popup-cancel">${this.cancelText}</button>` : ''}
           <button class="popup-btn btn-primary" id="popup-confirm">${this.confirmText}</button>
         </div>
       </div>
     `;
-
-    this._attachEvents();
   }
 
-  _attachEvents() {
+  _attachEvents(resolve) {
     const confirmBtn = this.overlay.querySelector('#popup-confirm');
     const cancelBtn = this.overlay.querySelector('#popup-cancel');
+    const inputField = this.overlay.querySelector('#popup-input');
 
     confirmBtn.addEventListener('click', () => {
-      if (this.onConfirm) this.onConfirm();
+      // If it's an input popup, get the value. Otherwise, just return true.
+      const result = this.isInput ? inputField.value : true;
+      
+      if (this.onConfirm) this.onConfirm(result);
+      resolve(result); // This sends the text back to your 'await' call
       this.hide();
     });
 
     if (cancelBtn) {
-      cancelBtn.addEventListener('click', () => this.hide());
+      cancelBtn.addEventListener('click', () => {
+        resolve(null);
+        this.hide();
+      });
     }
 
-    // Close on clicking outside the card
     this.overlay.addEventListener('click', (e) => {
-      if (e.target === this.overlay) this.hide();
+      if (e.target === this.overlay) {
+        resolve(null);
+        this.hide();
+      }
     });
   }
 
   show() {
-    this._createMarkup();
-    document.body.appendChild(this.overlay);
+    return new Promise((resolve) => {
+      this._createMarkup();
+      this._attachEvents(resolve);
+      document.body.appendChild(this.overlay);
 
-    // Apply blur if enabled (Targeting a generic 'main' tag or body children)
-    if (this.useBlur) {
-      // You can replace 'main' with your specific content wrapper ID
-      document.querySelector('main')?.classList.add('content-blur-active');
-    }
+      if (this.useBlur) {
+        document.querySelector('main')?.classList.add('content-blur-active');
+      }
 
-    // Trigger animation
-    requestAnimationFrame(() => {
-      this.overlay.classList.add('active');
+      requestAnimationFrame(() => {
+        this.overlay.classList.add('active');
+        // Focus the text field automatically
+        this.overlay.querySelector('#popup-input')?.focus();
+      });
     });
   }
 
   hide() {
     this.overlay.classList.remove('active');
-    
     if (this.useBlur) {
       document.querySelector('main')?.classList.remove('content-blur-active');
     }
-
-    // Remove from DOM after transition finishes
     this.overlay.addEventListener('transitionend', () => {
       this.overlay.remove();
     }, { once: true });

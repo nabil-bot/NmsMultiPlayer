@@ -54,6 +54,72 @@ function sendWebViewSignal(type_, title_) {
 
 
 
+
+const pendingRequests = new Map();
+
+function callNative(type, payload) {
+  const requestId = Math.random().toString(36).substring(7);
+  
+  return new Promise((resolve, reject) => {
+    pendingRequests.set(requestId, { resolve, reject });
+
+    window.ReactNativeWebView.postMessage(JSON.stringify({
+      type: type,
+      requestId: requestId,
+      payload: payload // This matches message.payload in RN
+    }));
+  });
+}
+
+// Updated these to wrap the keys in an object
+async function saveDataLocal(key, value) {
+  return callNative('@save_data', { dataKey: key, data: value });
+}
+
+async function pushDataLocal(key, value) {
+  return callNative('@push_data', { dataKey: key, data: value });
+}
+
+async function loadDataLocal(key) {
+  return callNative('@load_data', { dataKey: key });
+}
+
+async function removeDataLocal(key) {
+  return callNative('@remove_data', { dataKey: key});
+}
+
+window.onNativeResponse = function(response) {
+  // Ensure we handle both string and object responses depending on how sendToWeb is built
+  const { requestId, data, error } = typeof response === 'string' ? JSON.parse(response) : response;
+  
+  if (pendingRequests.has(requestId)) {
+    const { resolve, reject } = pendingRequests.get(requestId);
+    if (error) reject(error);
+    else resolve(data);
+    pendingRequests.delete(requestId);
+  }
+};
+
+
+function loadPlaylist() {
+  // removeDataLocal('ytPlaylist');
+  loadDataLocal('ytPlaylist').then((data) => {
+    if (!data) return alert("Empty!");
+
+    let names;
+    if (Array.isArray(data)) {
+        // If it's an array, get the 'name' property
+        names = data.map(item => item.name || "Unnamed");
+    } else {
+        // If it's an object, get the keys
+        names = Object.keys(data);
+    }
+    alert("Playlists found:\n" + `num of videos: ${data[names[0]].urlList.length}`);
+});
+
+}
+
+
 function keepLastFiveElements(obj) {
   let entries = Object.entries(obj);
   if (entries.length > 5) {

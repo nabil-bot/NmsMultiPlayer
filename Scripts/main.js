@@ -108,7 +108,7 @@ class multiPlayer {
       } // end of addVideo
 
 
-    async addYoutubeVideo(videoUrl, volume=70, isPlaylist=false, playlistVideos=[], timeFrame=0, playlistIndex=0, customPlaylist=false) {
+    async addYoutubeVideo(videoUrl, volume=70, isPlaylist=false, playlistVideos=[], timeFrame=0, playlistIndex=0, customPlaylist=false, saved_name=null) {
       try{
         
         if (isPlaylist){
@@ -133,6 +133,7 @@ class multiPlayer {
         let videoId = isPlaylist
           ? getVideoId(playlistVideos[this.currentPlaylistIndex])
           : getVideoId(videoUrl);
+        
         if (!videoId) return;
         const videoWrapper = document.createElement("div");
         videoWrapper.classList.add("video-wrapper");
@@ -178,7 +179,6 @@ class multiPlayer {
             volumeSlider.disabled = true;
           }, 3500);
         }
-
         volumeContainer.addEventListener("mousedown", enableVolumeTemporarily);
         volumeSlider.addEventListener("input", () => {
           setVolume(videoWrapper, volumeSlider.value);
@@ -197,8 +197,6 @@ class multiPlayer {
             }
           }
         });
-
-
         // Controls Area
         const videoControlsWrapper = document.createElement("div");
         videoControlsWrapper.classList.add("video-controls");
@@ -256,7 +254,9 @@ class multiPlayer {
                {
                 playVideo();
               }
- 
+              if (item.text.includes("Save as Playlist")) {
+                this.saveYtPlaylist(saved_name);
+              }
               if (item.text === "Remove Unplayable") 
               {
                 this.cleanupNonEmbeddable();
@@ -295,6 +295,8 @@ class multiPlayer {
 
           menu.appendChild(el);
         });
+
+        
 
         menuBtn.onclick = (e) => {
           e.stopPropagation();
@@ -584,6 +586,49 @@ class multiPlayer {
         }
       }
     }
+
+
+    async saveYtPlaylist(savedName=null) {
+      const PlaylistName = new Popup({
+        title: "Save Playlist",
+        message: "Enter a name for your playlist:",
+        confirmText: "Save",
+        cancelText: "Cancel",
+        isInput: true,
+        useBlur: true
+      });
+
+      const playlistName = await PlaylistName.show();
+
+      if (playlistName) {
+          loadDataLocal('ytPlaylist').then(async (data) => {
+              // 1. Initialize data if it's null/empty
+              let currentData = data || {}; 
+              let shouldSave = false;
+
+              // 2. Check if the name already exists
+              if (currentData[playlistName]) {
+                  const confirmReplace = confirm(`"${playlistName}" already exists. Replace it?`);
+                  if (confirmReplace) {
+                      currentData[playlistName] = { urlList: this.ytPlaylist };
+                      shouldSave = true;
+                  }
+              } else {
+                  // 3. If it doesn't exist, add it
+                  currentData[playlistName] = { urlList: this.ytPlaylist };
+                  shouldSave = true;
+              }
+              // 4. Save the updated object
+              if (shouldSave) {
+                  await saveDataLocal("ytPlaylist", currentData);
+                  // alert("Playlist saved successfully!");
+              }
+          });
+      }
+      else{
+
+      }
+    } // end of saveYtPlaylist
 
     async cleanupNonEmbeddable() {
             const originalCount = this.ytPlaylist.length;
