@@ -8,7 +8,7 @@ class multiPlayer {
         this.currentPlaylistIndex = 0;
         this.playlistLabel = null
         this.autoPlayCheckBox = null
-        this.playlistVolume = 80;
+        // this.playlistVolume = 80;
         this.showingPlaylist = false;
         this.playlistViewInstance = null;
         // connectors ============================
@@ -117,7 +117,7 @@ class multiPlayer {
             const isConfirmed = confirm("There is already an playlist\nDo you want to add to curretn playlist?");
             if (!isConfirmed) return  
             
-            this.playlistVolume = volume;
+            // this.playlistVolume = volume;
             this.ytPlaylist.push(...playlistVideos);
             this.updatePlaylistLabel()
             if (this.ytPlaylist_loaded && this.playlistViewInstance) {
@@ -127,7 +127,7 @@ class multiPlayer {
           } else{
             this.currentPlaylistIndex = playlistIndex
           }
-          this.playlistVolume = volume;
+          // this.playlistVolume = volume;
           this.ytPlaylist.push(...playlistVideos);
         }
         let videoId = isPlaylist
@@ -180,24 +180,23 @@ class multiPlayer {
           }, 3500);
         }
         volumeContainer.addEventListener("mousedown", enableVolumeTemporarily);
-        volumeSlider.addEventListener("input", () => {
-          setVolume(videoWrapper, volumeSlider.value);
-          if (isPlaylist){
-            this.playlistVolume = volumeSlider.value
-          }
-          if (customPlaylist){
-            const dic = getCookie("customListDic") || {};
-            dic.volume = volumeSlider.value;
-            setCookie("customListDic", dic, 14);
-          }else{
-            const dic = getCookie("urlDic");
-            if (dic && dic[videoUrl]) {
-              dic[videoUrl].volume = volumeSlider.value;
-              setCookie("urlDic", dic, 10);
-            }
-          }
-        });
-        // Controls Area
+        // volumeSlider.addEventListener("input", () => {
+        //   setVolume(videoWrapper, volumeSlider.value); // this works perfectly for single video
+        //   // if (isPlaylist){
+        //   //   this.playlistVolume = volumeSlider.value
+        //   // }
+        //   if (customPlaylist){
+        //     const dic = getCookie("customListDic") || {};
+        //     dic.volume = volumeSlider.value;
+        //     setCookie("customListDic", dic, 14);
+        //   }else{
+        //     const dic = getCookie("urlDic");
+        //     if (dic && dic[videoUrl]) {
+        //       dic[videoUrl].volume = volumeSlider.value;
+        //       setCookie("urlDic", dic, 10);
+        //     }
+        //   }
+        // });
         const videoControlsWrapper = document.createElement("div");
         videoControlsWrapper.classList.add("video-controls");
 
@@ -384,7 +383,7 @@ class multiPlayer {
 
 
         // ---- PLAYER INITIALIZATION ---- //
-        this.initializeYouTubeAPI(iframe, volume, timeFrame, mediaLabel, isPlaylist);
+        const player = this.initializeYouTubeAPI(iframe, volume, timeFrame, mediaLabel, isPlaylist);
 
 
         // ---- SAVE URL PROPERTIES ---- //
@@ -397,6 +396,25 @@ class multiPlayer {
         // ------------------------------
         //   INNER FUNCTIONS
         // ------------------------------
+
+        volumeSlider.addEventListener("input", () => {
+          // setVolume(videoWrapper, volumeSlider.value); // this works perfectly for single video
+          // if (isPlaylist){
+          //   this.playlistVolume = volumeSlider.value
+          // }
+          player.setVolume(volumeSlider.value);
+          if (customPlaylist){
+            const dic = getCookie("customListDic") || {};
+            dic.volume = volumeSlider.value;
+            setCookie("customListDic", dic, 14);
+          }else{
+            const dic = getCookie("urlDic");
+            if (dic && dic[videoUrl]) {
+              dic[videoUrl].volume = volumeSlider.value;
+              setCookie("urlDic", dic, 10);
+            }
+          }
+        });
 
 
         function pauseVideo() {
@@ -427,78 +445,7 @@ class multiPlayer {
       if (this.playlistLabel)
         this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
     }  
-    // changePlaylistVideo(dir, iframe, mediaLabel) {
-    //       if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) 
-    //         return;
-    //       if (!this.autoPlayCheckBox.checked) return;
-
-    //       this.currentPlaylistIndex =
-    //         (this.currentPlaylistIndex + dir + this.ytPlaylist.length) %
-    //         this.ytPlaylist.length;
-    //       this.updatePlaylistLabel()
-    //       const newUrl = this.ytPlaylist[this.currentPlaylistIndex];
-    //       const newId = getVideoId(newUrl);
-
-    //       iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
-          
-    //       this.initializeYouTubeAPI(iframe, this.playlistVolume, 0, mediaLabel, true);
-
-    //       // Update the Playlist UI Highlight
-    //       if (this.playlistViewInstance) {
-    //           this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
-    //       }
-
-    //       // const dic = getCookie("customListDic") || {};
-    //       // dic.currentIndex = this.currentPlaylistIndex;
-    //       // setCookie("customListDic", dic, 14);
-          
-    //     }  
-
-  //  initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel, isPlaylist) {
-  //   // Store the volume on the iframe element so the API can always find the "current" target
-  //   iframe.dataset.targetVolume = volume_;
-
-  //   const createPlayer = () => {
-  //       const player = new YT.Player(iframe, {
-  //           events: {
-  //               onReady: (e) => {
-  //                   // Always pull the volume from the dataset, which is updated per-call
-  //                   const getLatestVol = () => Number(iframe.dataset.targetVolume);
-                    
-  //                   e.target.setVolume(getLatestVol());
-  //                   e.target.seekTo(timeFrame);
-                    
-  //                   if (mediaLabel) {
-  //                       const videoData = e.target.getVideoData();
-  //                       mediaLabel.textContent = videoData.title;
-  //                   }
-
-  //                   let checkCount = 0;
-  //                   const forceVol = setInterval(() => {
-  //                       e.target.setVolume(getLatestVol());
-  //                       checkCount++;
-  //                       if (checkCount > 10) clearInterval(forceVol); // Increased to 10 for safety
-  //                   }, 200);
-
-  //                   if (!players.includes(e.target)) players.push(e.target);
-  //               },
-  //               onStateChange: (e) => {
-  //                   if (e.data === YT.PlayerState.ENDED) {
-  //                     if (isPlaylist){
-  //                       this.changePlaylistVideo(+1, iframe, mediaLabel);
-  //                     }    
-  //                   }
-  //               },
-  //           },
-  //       });
-  //   }
-
-  //   const wait = () => {
-  //       if (!window.YT || !YT.Player) return setTimeout(wait, 80);
-  //         createPlayer();
-  //         }
-  //       wait();
-  //     }
+   
 
   changePlaylistVideo(dir, iframe, mediaLabel) {
         if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) return;
@@ -566,13 +513,17 @@ class multiPlayer {
                       },
                   },
               });
+              return player;
           }
 
           const wait = () => {
               if (!window.YT || !YT.Player) return setTimeout(wait, 80);
-              createPlayer();
+              const my_player = createPlayer();
+              return my_player;
           }
-          wait();
+          const player = wait();
+          return player;
+          
       }
     addToYtPlaylist(url) {
       if (this.ytPlaylist.length === 0){

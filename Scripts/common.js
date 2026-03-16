@@ -516,3 +516,9 @@ function showHideGlobarControls() {
     controls.style.display = 'none';
   }
 }
+
+
+
+document.addEventListener('visibilitychange', (event) => {
+    event.stopImmediatePropagation();
+}, true); // Use capture phase to catch it first
