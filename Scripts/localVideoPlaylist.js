@@ -25,127 +25,262 @@ class LocalVideoPlaylist {
     this.loadVideo(0);
   }
 
+  // createPlayerSkeleton() {
+  //   const videosContainer = document.getElementById('videos-container');
+  //   this.container = document.createElement('div');
+  //   this.container.classList.add('video-local-container', 'playlist-container');
+  //   this.container.style.position = 'relative'; // Necessary for overlay positioning
+
+  //   // Header: Title and Menu
+  //   const header = document.createElement('div');
+  //   header.classList.add('remove-container');
+    
+  //   this.titleLabel = document.createElement('label');
+  //   this.titleLabel.classList.add('VideoFileName');
+    
+  //   const menuBtn = document.createElement('button');
+  //   menuBtn.className = 'MenuButton-class';
+  //   menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+  //   this.setupMenu(menuBtn);
+
+  //   header.appendChild(menuBtn);
+  //   header.appendChild(this.titleLabel);
+
+  //   // Video Element
+  //   this.videoPlayer = document.createElement('video');
+  //   this.videoPlayer.className = 'local-video-player';
+  //   this.videoPlayer.controls = false;
+
+  //   // --- Playlist Overlay (The List View) ---
+  //   this.playlistOverlay = document.createElement('div');
+  //   this.playlistOverlay.className = 'playlist-overlay';
+  //   this.playlistOverlay.style.display = 'none';
+  //   this.renderPlaylistItems();
+    
+  //   // Timeline
+  //   const sliderContainer = document.createElement('div');
+  //   sliderContainer.classList.add('slider-container');
+    
+  //   this.timelineSlider = document.createElement('input');
+  //   this.timelineSlider.type = 'range';
+  //   this.timelineSlider.className = 'timeline-slider';
+  //   this.timelineSlider.min = '0';
+  //   this.timelineSlider.value = '0';
+  //   this.timelineSlider.step = '1';
+  //   this.timelineSlider.disabled = true;
+
+  //   sliderContainer.addEventListener('mousemove', () => this.enableSlider(this.timelineSlider));
+
+  //   const timeLabels = document.createElement('div');
+  //   timeLabels.classList.add('timelabelContainer');
+  //   this.currentTimeLabel = document.createElement('span');
+  //   this.currentTimeLabel.className = 'time-label';
+
+  //   this.videoCounter = document.createElement('span');
+  //   this.videoCounter.className = 'video-counter-label';
+  //   this.videoCounter.style.margin = '0 10px';
+  //   this.updateCounter(); // Initialize text
+
+
+  //   this.durationLabel = document.createElement('span');
+  //   this.durationLabel.className = 'time-label';
+  //   this.timerStatus = document.createElement("div");
+  //   this.timerStatus.className = "timer-status";
+  //   this.timerStatus.style.display = "none";
+
+  //   timeLabels.appendChild(this.currentTimeLabel);
+  //   timeLabels.appendChild(this.videoCounter);
+  //   timeLabels.appendChild(this.timerStatus);
+  //   timeLabels.appendChild(this.durationLabel);
+  //   sliderContainer.appendChild(this.timelineSlider);
+  //   sliderContainer.appendChild(timeLabels);
+
+  //   // Controls
+  //   const controls = document.createElement('div');
+  //   controls.classList.add('local-video-controls');
+
+  //   const mainBtns = document.createElement('div');
+  //   mainBtns.classList.add('otherVideoControllersContainer');
+
+  //   const prevBtn = document.createElement('button');
+  //   prevBtn.innerHTML = '<i class="fas fa-step-backward"></i>';
+  //   prevBtn.onclick = () => this.prev();
+
+  //   this.playPauseBtn = document.createElement('button');
+  //   this.playPauseBtn.classList.add('video-play-pause');
+  //   this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+
+  //   const nextBtn = document.createElement('button');
+  //   nextBtn.innerHTML = '<i class="fas fa-step-forward"></i>';
+  //   nextBtn.onclick = () => this.next();
+
+  //   const backwardButton = document.createElement('button');
+  //   backwardButton.textContent = '-10s';
+  //   backwardButton.onclick = () => this.videoPlayer.currentTime -= 10;
+
+  //   const forwardButton = document.createElement('button');
+  //   forwardButton.textContent = '+10s';
+  //   forwardButton.onclick = () => this.videoPlayer.currentTime += 10;
+
+  //   const settingsBtn = document.createElement('button');
+  //   settingsBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>'; // Three vertical dots
+  //   this.setupSettingsMenu(settingsBtn);
+
+  //   // --- New: List Toggle Button ---
+  //   const listBtn = document.createElement('button');
+  //   listBtn.innerHTML = '<i class="fas fa-list"></i>';
+  //   listBtn.onclick = (e) => {
+  //       e.stopPropagation();
+  //       this.playlistOverlay.style.display = this.playlistOverlay.style.display === 'none' ? 'block' : 'none';
+  //   };
+
+  //   mainBtns.append(prevBtn, this.playPauseBtn, nextBtn, backwardButton, forwardButton, listBtn, settingsBtn);
+  //   // Volume
+  //   const volCont = document.createElement('div');
+  //   volCont.classList.add('volume-container');
+  //   const speakerIcon = document.createElement('i');
+  //   speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
+  //   this.volumeSlider = document.createElement('input');
+  //   this.volumeSlider.classList.add('slider');
+  //   this.volumeSlider.type = 'range';
+  //   this.volumeSlider.min = 0;
+  //   this.volumeSlider.max = 1;
+  //   this.volumeSlider.step = 0.01;
+  //   this.volumeSlider.value = 0.8;
+  //   this.volumeSlider.disabled = true;
+  //   volCont.append(speakerIcon, this.volumeSlider);
+  //   volCont.addEventListener('mousemove', () => this.enableVolumeSlider());
+  //   controls.appendChild(mainBtns);
+  //   controls.appendChild(volCont);
+  //   this.container.append(header, this.videoPlayer, this.playlistOverlay, sliderContainer, controls);
+  //   videosContainer.appendChild(this.container);
+  //   this.attachListeners(settingsBtn);
+  // }
   createPlayerSkeleton() {
-    const videosContainer = document.getElementById('videos-container');
-    this.container = document.createElement('div');
-    this.container.classList.add('video-local-container', 'playlist-container');
-    this.container.style.position = 'relative'; // Necessary for overlay positioning
+      const videosContainer = document.getElementById('videos-container');
+      this.container = document.createElement('div');
+      this.container.classList.add('video-local-container', 'playlist-container');
+      this.container.style.position = 'relative';
 
-    // Header: Title and Menu
-    const header = document.createElement('div');
-    header.classList.add('remove-container');
-    
-    this.titleLabel = document.createElement('label');
-    this.titleLabel.classList.add('VideoFileName');
-    
-    const menuBtn = document.createElement('button');
-    menuBtn.className = 'MenuButton-class';
-    menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-    this.setupMenu(menuBtn);
+      const header = document.createElement('div');
+      header.classList.add('remove-container');
+      
+      this.titleLabel = document.createElement('label');
+      this.titleLabel.classList.add('VideoFileName');
+      
+      const menuBtn = document.createElement('button');
+      menuBtn.className = 'MenuButton-class';
+      menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+      this.setupMenu(menuBtn);
 
-    header.appendChild(menuBtn);
-    header.appendChild(this.titleLabel);
+      header.appendChild(menuBtn);
+      header.appendChild(this.titleLabel);
 
-    // Video Element
-    this.videoPlayer = document.createElement('video');
-    this.videoPlayer.className = 'local-video-player';
-    this.videoPlayer.controls = false;
+      this.videoPlayer = document.createElement('video');
+      this.videoPlayer.className = 'local-video-player';
+      this.videoPlayer.controls = false;
 
-    // --- Playlist Overlay (The List View) ---
-    this.playlistOverlay = document.createElement('div');
-    this.playlistOverlay.className = 'playlist-overlay';
-    this.playlistOverlay.style.display = 'none';
-    this.renderPlaylistItems();
-    
-    // Timeline
-    const sliderContainer = document.createElement('div');
-    sliderContainer.classList.add('slider-container');
-    
-    this.timelineSlider = document.createElement('input');
-    this.timelineSlider.type = 'range';
-    this.timelineSlider.className = 'timeline-slider';
-    this.timelineSlider.min = '0';
-    this.timelineSlider.value = '0';
-    this.timelineSlider.step = '1';
-    this.timelineSlider.disabled = true;
+      this.playlistOverlay = document.createElement('div');
+      this.playlistOverlay.className = 'playlist-overlay';
+      this.playlistOverlay.style.display = 'none';
+      this.renderPlaylistItems();
+      
+      const sliderContainer = document.createElement('div');
+      sliderContainer.classList.add('slider-container');
+      
+      this.timelineSlider = document.createElement('input');
+      this.timelineSlider.type = 'range';
+      this.timelineSlider.className = 'timeline-slider';
+      this.timelineSlider.min = '0';
+      this.timelineSlider.value = '0';
+      this.timelineSlider.step = '1';
+      this.timelineSlider.disabled = true;
 
-    sliderContainer.addEventListener('mousemove', () => this.enableSlider(this.timelineSlider));
+      sliderContainer.addEventListener('mousemove', () => this.enableSlider(this.timelineSlider));
 
-    const timeLabels = document.createElement('div');
-    timeLabels.classList.add('timelabelContainer');
-    this.currentTimeLabel = document.createElement('span');
-    this.currentTimeLabel.className = 'time-label';
-    this.durationLabel = document.createElement('span');
-    this.durationLabel.className = 'time-label';
-    this.timerStatus = document.createElement("div");
-    this.timerStatus.className = "timer-status";
-    this.timerStatus.style.display = "none";
+      const timeLabels = document.createElement('div');
+      timeLabels.classList.add('timelabelContainer');
+      this.currentTimeLabel = document.createElement('span');
+      this.currentTimeLabel.className = 'time-label';
 
-    timeLabels.appendChild(this.currentTimeLabel);
-    timeLabels.appendChild(this.timerStatus);
-    timeLabels.appendChild(this.durationLabel);
-    sliderContainer.appendChild(this.timelineSlider);
-    sliderContainer.appendChild(timeLabels);
+      this.videoCounter = document.createElement('span');
+      this.videoCounter.className = 'video-counter-label';
+      this.videoCounter.style.margin = '0 10px';
+      this.updateCounter(); 
 
-    // Controls
-    const controls = document.createElement('div');
-    controls.classList.add('local-video-controls');
+      this.durationLabel = document.createElement('span');
+      this.durationLabel.className = 'time-label';
+      this.timerStatus = document.createElement("div");
+      this.timerStatus.className = "timer-status";
+      this.timerStatus.style.display = "none";
 
-    const mainBtns = document.createElement('div');
-    mainBtns.classList.add('otherVideoControllersContainer');
+      timeLabels.appendChild(this.currentTimeLabel);
+      timeLabels.appendChild(this.videoCounter);
+      timeLabels.appendChild(this.timerStatus);
+      timeLabels.appendChild(this.durationLabel);
+      sliderContainer.appendChild(this.timelineSlider);
+      sliderContainer.appendChild(timeLabels);
 
-    const prevBtn = document.createElement('button');
-    prevBtn.innerHTML = '<i class="fas fa-step-backward"></i>';
-    prevBtn.onclick = () => this.prev();
+      const controls = document.createElement('div');
+      controls.classList.add('local-video-controls');
 
-    this.playPauseBtn = document.createElement('button');
-    this.playPauseBtn.classList.add('video-play-pause');
-    this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+      const mainBtns = document.createElement('div');
+      mainBtns.classList.add('otherVideoControllersContainer');
 
-    const nextBtn = document.createElement('button');
-    nextBtn.innerHTML = '<i class="fas fa-step-forward"></i>';
-    nextBtn.onclick = () => this.next();
+      const prevBtn = document.createElement('button');
+      prevBtn.innerHTML = '<i class="fas fa-step-backward"></i>';
+      prevBtn.onclick = (e) => { e.stopPropagation(); this.prev(); };
 
-    const backwardButton = document.createElement('button');
-    backwardButton.textContent = '-10s';
-    backwardButton.onclick = () => this.videoPlayer.currentTime -= 10;
+      this.playPauseBtn = document.createElement('button');
+      this.playPauseBtn.classList.add('video-play-pause');
+      this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
 
-    const forwardButton = document.createElement('button');
-    forwardButton.textContent = '+10s';
-    forwardButton.onclick = () => this.videoPlayer.currentTime += 10;
+      const nextBtn = document.createElement('button');
+      nextBtn.innerHTML = '<i class="fas fa-step-forward"></i>';
+      nextBtn.onclick = (e) => { e.stopPropagation(); this.next(); };
 
-    const fullscreenBtn = document.createElement('button');
-    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+      const backwardButton = document.createElement('button');
+      backwardButton.textContent = '-10s';
+      backwardButton.onclick = (e) => { e.stopPropagation(); this.videoPlayer.currentTime -= 10; };
 
-    // --- New: List Toggle Button ---
-    const listBtn = document.createElement('button');
-    listBtn.innerHTML = '<i class="fas fa-list"></i>';
-    listBtn.onclick = (e) => {
-        e.stopPropagation();
-        this.playlistOverlay.style.display = this.playlistOverlay.style.display === 'none' ? 'block' : 'none';
-    };
+      const forwardButton = document.createElement('button');
+      forwardButton.textContent = '+10s';
+      forwardButton.onclick = (e) => { e.stopPropagation(); this.videoPlayer.currentTime += 10; };
 
-    mainBtns.append(prevBtn, this.playPauseBtn, nextBtn, backwardButton, forwardButton, listBtn, fullscreenBtn);
-    // Volume
-    const volCont = document.createElement('div');
-    volCont.classList.add('volume-container');
-    const speakerIcon = document.createElement('i');
-    speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
-    this.volumeSlider = document.createElement('input');
-    this.volumeSlider.classList.add('slider');
-    this.volumeSlider.type = 'range';
-    this.volumeSlider.min = 0;
-    this.volumeSlider.max = 1;
-    this.volumeSlider.step = 0.01;
-    this.volumeSlider.value = 0.8;
-    this.volumeSlider.disabled = true;
-    volCont.append(speakerIcon, this.volumeSlider);
-    volCont.addEventListener('mousemove', () => this.enableVolumeSlider());
-    controls.appendChild(mainBtns);
-    controls.appendChild(volCont);
-    this.container.append(header, this.videoPlayer, this.playlistOverlay, sliderContainer, controls);
-    videosContainer.appendChild(this.container);
-    this.attachListeners(fullscreenBtn);
+      const settingsBtn = document.createElement('button');
+      settingsBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+      this.setupSettingsMenu(settingsBtn);
+
+      const listBtn = document.createElement('button');
+      listBtn.innerHTML = '<i class="fas fa-list"></i>';
+      listBtn.onclick = (e) => {
+          e.stopPropagation();
+          this.playlistOverlay.style.display = this.playlistOverlay.style.display === 'none' ? 'block' : 'none';
+      };
+
+      mainBtns.append(prevBtn, this.playPauseBtn, nextBtn, backwardButton, forwardButton, listBtn, settingsBtn);
+      
+      const volCont = document.createElement('div');
+      volCont.classList.add('volume-container');
+      const speakerIcon = document.createElement('i');
+      speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
+      this.volumeSlider = document.createElement('input');
+      this.volumeSlider.classList.add('slider');
+      this.volumeSlider.type = 'range';
+      this.volumeSlider.min = 0;
+      this.volumeSlider.max = 1;
+      this.volumeSlider.step = 0.01;
+      this.volumeSlider.value = 0.8;
+      this.volumeSlider.disabled = true;
+      volCont.append(speakerIcon, this.volumeSlider);
+      volCont.addEventListener('mousemove', () => this.enableVolumeSlider());
+      
+      controls.appendChild(mainBtns);
+      controls.appendChild(volCont);
+      this.container.append(header, this.videoPlayer, this.playlistOverlay, sliderContainer, controls);
+      videosContainer.appendChild(this.container);
+      
+      this.attachListeners(); // No argument needed anymore
   }
   renderPlaylistItems() {
     this.playlistOverlay.innerHTML = '';
@@ -233,41 +368,79 @@ class LocalVideoPlaylist {
     }, 3500);
   }
 
-  attachListeners(fullscreenBtn) {
+  // attachListeners(fullscreenBtn) {
+  //   this.videoPlayer.addEventListener('play', () => {
+  //     this.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+  //   });
+  //   this.videoPlayer.addEventListener('pause', () => {
+  //     this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+  //   });
+  //   this.playPauseBtn.onclick = () => {
+  //     this.videoPlayer.paused ? this.videoPlayer.play() : this.videoPlayer.pause();
+  //   };
+
+  //   this.videoPlayer.addEventListener('timeupdate', () => {
+  //     this.currentTimeLabel.textContent = this.formatTime(this.videoPlayer.currentTime);
+  //     this.timelineSlider.value = this.videoPlayer.currentTime;
+  //     this.timelineSlider.max = this.videoPlayer.duration || 0;
+  //     this.durationLabel.textContent = this.formatTime(this.videoPlayer.duration || 0);
+      
+  //     const currentUrl = this.videoData[this.currentIndex].url;
+  //     this.saveCookieData(currentUrl, this.videoPlayer.currentTime, this.videoPlayer.volume);
+  //   });
+
+  //   this.timelineSlider.oninput = () => {
+  //     this.videoPlayer.currentTime = this.timelineSlider.value;
+  //   };
+
+  //   this.volumeSlider.oninput = () => {
+  //     this.videoPlayer.volume = this.volumeSlider.value;
+  //   };
+
+  //   fullscreenBtn.onclick = () => {
+  //     if (document.fullscreenElement) {
+  //       document.exitFullscreen();
+  //     } else {
+  //       this.videoPlayer.requestFullscreen();
+  //     }
+  //   };
+
+  //   this.videoPlayer.addEventListener('ended', () => this.next());
+    
+  //   // Hide playlist overlay if clicking anywhere else in the container
+  //   this.container.addEventListener('click', () => {
+  //       this.playlistOverlay.style.display = 'none';
+  //   });
+  //   this.playlistOverlay.addEventListener('click', (e) => e.stopPropagation());
+  // }
+  attachListeners() {
     this.videoPlayer.addEventListener('play', () => {
-      this.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        this.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
     });
     this.videoPlayer.addEventListener('pause', () => {
-      this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
     });
-    this.playPauseBtn.onclick = () => {
-      this.videoPlayer.paused ? this.videoPlayer.play() : this.videoPlayer.pause();
+    this.playPauseBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.videoPlayer.paused ? this.videoPlayer.play() : this.videoPlayer.pause();
     };
 
     this.videoPlayer.addEventListener('timeupdate', () => {
-      this.currentTimeLabel.textContent = this.formatTime(this.videoPlayer.currentTime);
-      this.timelineSlider.value = this.videoPlayer.currentTime;
-      this.timelineSlider.max = this.videoPlayer.duration || 0;
-      this.durationLabel.textContent = this.formatTime(this.videoPlayer.duration || 0);
-      
-      const currentUrl = this.videoData[this.currentIndex].url;
-      this.saveCookieData(currentUrl, this.videoPlayer.currentTime, this.videoPlayer.volume);
+        this.currentTimeLabel.textContent = this.formatTime(this.videoPlayer.currentTime);
+        this.timelineSlider.value = this.videoPlayer.currentTime;
+        this.timelineSlider.max = this.videoPlayer.duration || 0;
+        this.durationLabel.textContent = this.formatTime(this.videoPlayer.duration || 0);
+        
+        const currentUrl = this.videoData[this.currentIndex].url;
+        this.saveCookieData(currentUrl, this.videoPlayer.currentTime, this.videoPlayer.volume);
     });
 
     this.timelineSlider.oninput = () => {
-      this.videoPlayer.currentTime = this.timelineSlider.value;
+        this.videoPlayer.currentTime = this.timelineSlider.value;
     };
 
     this.volumeSlider.oninput = () => {
-      this.videoPlayer.volume = this.volumeSlider.value;
-    };
-
-    fullscreenBtn.onclick = () => {
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        this.videoPlayer.requestFullscreen();
-      }
+        this.videoPlayer.volume = this.volumeSlider.value;
     };
 
     this.videoPlayer.addEventListener('ended', () => this.next());
@@ -277,29 +450,68 @@ class LocalVideoPlaylist {
         this.playlistOverlay.style.display = 'none';
     });
     this.playlistOverlay.addEventListener('click', (e) => e.stopPropagation());
-  }
+}
 
+  // loadVideo(index) {
+  //   if (index < 0 || index >= this.videoData.length) return;
+  //   this.currentIndex = index;
+
+  //   this.updateCounter();
+  //   const data = this.videoData[index];
+    
+  //   this.titleLabel.textContent = data.name;
+  //   this.videoPlayer.src = data.url;
+    
+  //   this.renderPlaylistItems();
+  //   const fileDic = getCookie("fileDic");
+  //   if (fileDic && fileDic[data.url]) {
+  //     this.videoPlayer.currentTime = fileDic[data.url].timeFrame || 0;
+  //     if (this.videoPlayer.currentTime >= this.videoPlayer.duration) {
+  //       this.videoPlayer.currentTime = 0;
+  //     }
+  //     this.videoPlayer.volume = fileDic[data.url].volume || 0.8;
+  //     this.volumeSlider.value = this.videoPlayer.volume;
+  //   }
+  //   this.videoPlayer.play().catch(() => {});
+  // }
   loadVideo(index) {
-    if (index < 0 || index >= this.videoData.length) return;
-    this.currentIndex = index;
-    const data = this.videoData[index];
-    
-    this.titleLabel.textContent = data.name;
-    this.videoPlayer.src = data.url;
-    
-    // Highlight the active item in the list
-    this.renderPlaylistItems();
-    
-    const fileDic = getCookie("fileDic");
-    if (fileDic && fileDic[data.url]) {
-      this.videoPlayer.currentTime = fileDic[data.url].timeFrame || 0;
-      this.videoPlayer.volume = fileDic[data.url].volume || 0.8;
-      this.volumeSlider.value = this.videoPlayer.volume;
-    }
-    
-    this.videoPlayer.play().catch(() => {});
-  }
+      if (index < 0 || index >= this.videoData.length) return;
+      
+      this.currentIndex = index;
+      this.updateCounter();
+      const data = this.videoData[index];
+      
+      this.titleLabel.textContent = data.name;
+      
+      // Crucial: Reset time to 0 before changing source to prevent 'ended' event bugs
+      this.videoPlayer.pause();
+      this.videoPlayer.src = data.url;
+      this.videoPlayer.load(); 
 
+      this.renderPlaylistItems();
+      
+      const fileDic = getCookie("fileDic");
+      if (fileDic && fileDic[data.url]) {
+          const savedTime = fileDic[data.url].timeFrame || 0;
+          this.videoPlayer.volume = fileDic[data.url].volume || 0.8;
+          this.volumeSlider.value = this.videoPlayer.volume;
+
+          // Wait for metadata to ensure duration is known before setting currentTime
+          this.videoPlayer.onloadedmetadata = () => {
+              if (savedTime < this.videoPlayer.duration) {
+                  this.videoPlayer.currentTime = savedTime;
+              } else {
+                  this.videoPlayer.currentTime = 0;
+              }
+              this.videoPlayer.play().catch(() => {});
+              // Remove listener to prevent memory leaks
+              this.videoPlayer.onloadedmetadata = null;
+          };
+      } else {
+          this.videoPlayer.currentTime = 0;
+          this.videoPlayer.play().catch(() => {});
+      }
+  }
   next() {
     let nextIndex = (this.currentIndex + 1) % this.videoData.length;
     this.loadVideo(nextIndex);
@@ -403,6 +615,75 @@ class LocalVideoPlaylist {
         this.renderPlaylistItems();
         }
     }
+  
+  updateCounter() {
+    if (this.videoCounter) {
+        this.videoCounter.textContent = `(${this.currentIndex + 1}/${this.videoData.length})`;
+    }
+}
+
+setupSettingsMenu(btn) {
+    const menu = document.createElement('div');
+    menu.className = 'settings-dropdown-menu'; // Style this in CSS
+    menu.style.cssText = `
+        display: none; 
+        position: absolute; 
+        background: #222; 
+        color: white; 
+        border: 1px solid #444; 
+        border-radius: 4px; 
+        padding: 5px 0; 
+        z-index: 1000;
+    `;
+
+    const options = [
+        { 
+            text: 'Playback Speed', 
+            icon: 'fas fa-tachometer-alt', 
+            action: () => {
+                const speed = prompt("Enter playback speed (e.g., 0.5, 1, 1.5, 2):", this.videoPlayer.playbackRate);
+                if (speed) this.videoPlayer.playbackRate = parseFloat(speed);
+            } 
+        },
+        { 
+            text: 'Full Screen', 
+            icon: 'fas fa-expand', 
+            action: () => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    this.videoPlayer.requestFullscreen();
+                }
+            } 
+        }
+    ];
+
+    options.forEach(opt => {
+        const item = document.createElement('div');
+        item.style.padding = '8px 15px';
+        item.style.cursor = 'pointer';
+        item.innerHTML = `<i class="${opt.icon}" style="margin-right:10px; width: 20px;"></i>${opt.text}`;
+        item.onmouseover = () => item.style.background = '#444';
+        item.onmouseout = () => item.style.background = 'transparent';
+        item.onclick = (e) => {
+            e.stopPropagation();
+            opt.action();
+            menu.style.display = 'none';
+        };
+        menu.appendChild(item);
+    });
+
+    btn.onclick = (e) => {
+        e.stopPropagation();
+        const rect = btn.getBoundingClientRect();
+        menu.style.bottom = `${window.innerHeight - rect.top + 5}px`;
+        menu.style.right = `${window.innerWidth - rect.right}px`;
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    };
+
+    this.container.appendChild(menu);
+    document.addEventListener('click', () => menu.style.display = 'none');
+}  
 
 
 

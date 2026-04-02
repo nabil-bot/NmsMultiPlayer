@@ -105,3 +105,12 @@
     background: var(--border);
     border-radius: var(--radius-md);
 }
+
+.settings-dropdown-menu div:hover {
+    background-color: #333;
+}
+.video-counter-label {
+    font-size: 0.9em;
+    color: #ccc;
+    font-family: monospace;
+}
