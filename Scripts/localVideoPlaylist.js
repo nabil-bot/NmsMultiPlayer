@@ -25,137 +25,7 @@ class LocalVideoPlaylist {
     this.loadVideo(0);
   }
 
-  // createPlayerSkeleton() {
-  //   const videosContainer = document.getElementById('videos-container');
-  //   this.container = document.createElement('div');
-  //   this.container.classList.add('video-local-container', 'playlist-container');
-  //   this.container.style.position = 'relative'; // Necessary for overlay positioning
-
-  //   // Header: Title and Menu
-  //   const header = document.createElement('div');
-  //   header.classList.add('remove-container');
-    
-  //   this.titleLabel = document.createElement('label');
-  //   this.titleLabel.classList.add('VideoFileName');
-    
-  //   const menuBtn = document.createElement('button');
-  //   menuBtn.className = 'MenuButton-class';
-  //   menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-  //   this.setupMenu(menuBtn);
-
-  //   header.appendChild(menuBtn);
-  //   header.appendChild(this.titleLabel);
-
-  //   // Video Element
-  //   this.videoPlayer = document.createElement('video');
-  //   this.videoPlayer.className = 'local-video-player';
-  //   this.videoPlayer.controls = false;
-
-  //   // --- Playlist Overlay (The List View) ---
-  //   this.playlistOverlay = document.createElement('div');
-  //   this.playlistOverlay.className = 'playlist-overlay';
-  //   this.playlistOverlay.style.display = 'none';
-  //   this.renderPlaylistItems();
-    
-  //   // Timeline
-  //   const sliderContainer = document.createElement('div');
-  //   sliderContainer.classList.add('slider-container');
-    
-  //   this.timelineSlider = document.createElement('input');
-  //   this.timelineSlider.type = 'range';
-  //   this.timelineSlider.className = 'timeline-slider';
-  //   this.timelineSlider.min = '0';
-  //   this.timelineSlider.value = '0';
-  //   this.timelineSlider.step = '1';
-  //   this.timelineSlider.disabled = true;
-
-  //   sliderContainer.addEventListener('mousemove', () => this.enableSlider(this.timelineSlider));
-
-  //   const timeLabels = document.createElement('div');
-  //   timeLabels.classList.add('timelabelContainer');
-  //   this.currentTimeLabel = document.createElement('span');
-  //   this.currentTimeLabel.className = 'time-label';
-
-  //   this.videoCounter = document.createElement('span');
-  //   this.videoCounter.className = 'video-counter-label';
-  //   this.videoCounter.style.margin = '0 10px';
-  //   this.updateCounter(); // Initialize text
-
-
-  //   this.durationLabel = document.createElement('span');
-  //   this.durationLabel.className = 'time-label';
-  //   this.timerStatus = document.createElement("div");
-  //   this.timerStatus.className = "timer-status";
-  //   this.timerStatus.style.display = "none";
-
-  //   timeLabels.appendChild(this.currentTimeLabel);
-  //   timeLabels.appendChild(this.videoCounter);
-  //   timeLabels.appendChild(this.timerStatus);
-  //   timeLabels.appendChild(this.durationLabel);
-  //   sliderContainer.appendChild(this.timelineSlider);
-  //   sliderContainer.appendChild(timeLabels);
-
-  //   // Controls
-  //   const controls = document.createElement('div');
-  //   controls.classList.add('local-video-controls');
-
-  //   const mainBtns = document.createElement('div');
-  //   mainBtns.classList.add('otherVideoControllersContainer');
-
-  //   const prevBtn = document.createElement('button');
-  //   prevBtn.innerHTML = '<i class="fas fa-step-backward"></i>';
-  //   prevBtn.onclick = () => this.prev();
-
-  //   this.playPauseBtn = document.createElement('button');
-  //   this.playPauseBtn.classList.add('video-play-pause');
-  //   this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-
-  //   const nextBtn = document.createElement('button');
-  //   nextBtn.innerHTML = '<i class="fas fa-step-forward"></i>';
-  //   nextBtn.onclick = () => this.next();
-
-  //   const backwardButton = document.createElement('button');
-  //   backwardButton.textContent = '-10s';
-  //   backwardButton.onclick = () => this.videoPlayer.currentTime -= 10;
-
-  //   const forwardButton = document.createElement('button');
-  //   forwardButton.textContent = '+10s';
-  //   forwardButton.onclick = () => this.videoPlayer.currentTime += 10;
-
-  //   const settingsBtn = document.createElement('button');
-  //   settingsBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>'; // Three vertical dots
-  //   this.setupSettingsMenu(settingsBtn);
-
-  //   // --- New: List Toggle Button ---
-  //   const listBtn = document.createElement('button');
-  //   listBtn.innerHTML = '<i class="fas fa-list"></i>';
-  //   listBtn.onclick = (e) => {
-  //       e.stopPropagation();
-  //       this.playlistOverlay.style.display = this.playlistOverlay.style.display === 'none' ? 'block' : 'none';
-  //   };
-
-  //   mainBtns.append(prevBtn, this.playPauseBtn, nextBtn, backwardButton, forwardButton, listBtn, settingsBtn);
-  //   // Volume
-  //   const volCont = document.createElement('div');
-  //   volCont.classList.add('volume-container');
-  //   const speakerIcon = document.createElement('i');
-  //   speakerIcon.classList.add('fas', 'fa-volume-up', 'volume-icon');
-  //   this.volumeSlider = document.createElement('input');
-  //   this.volumeSlider.classList.add('slider');
-  //   this.volumeSlider.type = 'range';
-  //   this.volumeSlider.min = 0;
-  //   this.volumeSlider.max = 1;
-  //   this.volumeSlider.step = 0.01;
-  //   this.volumeSlider.value = 0.8;
-  //   this.volumeSlider.disabled = true;
-  //   volCont.append(speakerIcon, this.volumeSlider);
-  //   volCont.addEventListener('mousemove', () => this.enableVolumeSlider());
-  //   controls.appendChild(mainBtns);
-  //   controls.appendChild(volCont);
-  //   this.container.append(header, this.videoPlayer, this.playlistOverlay, sliderContainer, controls);
-  //   videosContainer.appendChild(this.container);
-  //   this.attachListeners(settingsBtn);
-  // }
+ 
   createPlayerSkeleton() {
       const videosContainer = document.getElementById('videos-container');
       this.container = document.createElement('div');
@@ -452,29 +322,7 @@ class LocalVideoPlaylist {
     this.playlistOverlay.addEventListener('click', (e) => e.stopPropagation());
 }
 
-  // loadVideo(index) {
-  //   if (index < 0 || index >= this.videoData.length) return;
-  //   this.currentIndex = index;
-
-  //   this.updateCounter();
-  //   const data = this.videoData[index];
-    
-  //   this.titleLabel.textContent = data.name;
-  //   this.videoPlayer.src = data.url;
-    
-  //   this.renderPlaylistItems();
-  //   const fileDic = getCookie("fileDic");
-  //   if (fileDic && fileDic[data.url]) {
-  //     this.videoPlayer.currentTime = fileDic[data.url].timeFrame || 0;
-  //     if (this.videoPlayer.currentTime >= this.videoPlayer.duration) {
-  //       this.videoPlayer.currentTime = 0;
-  //     }
-  //     this.videoPlayer.volume = fileDic[data.url].volume || 0.8;
-  //     this.volumeSlider.value = this.videoPlayer.volume;
-  //   }
-  //   this.videoPlayer.play().catch(() => {});
-  // }
-  loadVideo(index) {
+  loadVideo(index, skiped=false) {
       if (index < 0 || index >= this.videoData.length) return;
       
       this.currentIndex = index;
@@ -498,13 +346,14 @@ class LocalVideoPlaylist {
 
           // Wait for metadata to ensure duration is known before setting currentTime
           this.videoPlayer.onloadedmetadata = () => {
-              if (savedTime < this.videoPlayer.duration) {
-                  this.videoPlayer.currentTime = savedTime;
-              } else {
-                  this.videoPlayer.currentTime = 0;
+              if (skiped === false){
+                if (savedTime < this.videoPlayer.duration) {
+                    this.videoPlayer.currentTime = savedTime;
+                } else {
+                    this.videoPlayer.currentTime = 0;
+                }
               }
               this.videoPlayer.play().catch(() => {});
-              // Remove listener to prevent memory leaks
               this.videoPlayer.onloadedmetadata = null;
           };
       } else {
@@ -514,12 +363,11 @@ class LocalVideoPlaylist {
   }
   next() {
     let nextIndex = (this.currentIndex + 1) % this.videoData.length;
-    this.loadVideo(nextIndex);
+    this.loadVideo(nextIndex, true);
   }
-
   prev() {
     let prevIndex = (this.currentIndex - 1 + this.videoData.length) % this.videoData.length;
-    this.loadVideo(prevIndex);
+    this.loadVideo(prevIndex, true);
   }
 
   formatTime(seconds) {
@@ -684,10 +532,6 @@ setupSettingsMenu(btn) {
     this.container.appendChild(menu);
     document.addEventListener('click', () => menu.style.display = 'none');
 }  
-
-
-
-
   setTimer(type) {
     get_timer_time(`Set ${type} Timer`).then((time) => {
       startMediaTimer(this.videoPlayer, time, type, this.timerStatus);
