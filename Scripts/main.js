@@ -479,12 +479,9 @@ class multiPlayer {
 
     initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel, isPlaylist) {
           iframe.dataset.targetVolume = volume_;
-
-          // Check if this iframe already has a player attached to it
           let existingPlayer = players.find(p => p.getIframe() === iframe);
 
           if (existingPlayer) {
-              // If it exists, just update its properties/video, don't make a new one
               existingPlayer.setVolume(Number(volume_));
               return; 
           }
@@ -504,7 +501,6 @@ class multiPlayer {
                       },
                       onStateChange: (e) => {
                           if (e.data === YT.PlayerState.ENDED && isPlaylist) {
-                         // Only proceed if Auto Play is checked AND we are not at the last video
                           const isNotLastVideo = this.currentPlaylistIndex < this.ytPlaylist.length - 1;
                           
                           if (this.autoPlayCheckBox && this.autoPlayCheckBox.checked && isNotLastVideo) {
