@@ -503,13 +503,14 @@ class multiPlayer {
                           if (!players.includes(e.target)) players.push(e.target);
                       },
                       onStateChange: (e) => {
-                          // CRITICAL: Only trigger auto-advance if THIS specific instance is a playlist
                           if (e.data === YT.PlayerState.ENDED && isPlaylist) {
-                              // Check checkbox here too so it doesn't fire if disabled
-                              if (this.autoPlayCheckBox && this.autoPlayCheckBox.checked) {
-                                  this.changePlaylistVideo(+1, iframe, mediaLabel);
-                              }
+                         // Only proceed if Auto Play is checked AND we are not at the last video
+                          const isNotLastVideo = this.currentPlaylistIndex < this.ytPlaylist.length - 1;
+                          
+                          if (this.autoPlayCheckBox && this.autoPlayCheckBox.checked && isNotLastVideo) {
+                              this.changePlaylistVideo(+1, iframe, mediaLabel);
                           }
+                      }
                       },
                   },
               });
