@@ -45,12 +45,16 @@
   <div class="group-container">
     
 	  <input type="file" id="file-input" class="hidden-input" accept="audio/*,video/*" multiple>
-	  <label for="file-input" class="file-input-label"><i class="fa-regular fa-file"></i> Add a local file</label>
+	  <label for="file-input" class="file-input-label"><i class="fa-regular fa-file"></i>Add a local file</label>
 
 
-    <input type="file" id="playlist-input" class="hidden-input" accept="audio/*,video/*" multiple>
-	  <label for="playlist-input" class="file-input-label"><i class="fa fa-list-ul" aria-hidden="true"></i> Add a local playlist</label>
-	  </div>
+    <input type="file" id="playlist-input" class="hidden-input" accept="video/*" multiple>
+	  <label for="playlist-input" class="file-input-label"><i class="fa fa-video" aria-hidden="true"></i> Add a local video playlist</label>
+	
+    <input type="file" id="audio-playlist-input" class="hidden-input" accept="audio/*" multiple>
+    <label for="audio-playlist-input" class="file-input-label"><i class="fa fa-music" aria-hidden="true"></i> Add a local audio playlist</label>
+  
+  </div>
 
     <div class="saved-playlist-container">
     </div>
@@ -97,6 +101,7 @@
     <script src="./Scripts/audioPlayer.js"></script>
     <script src="./Scripts/LocalVideoPlayer.js"></script>
     <script src="./Scripts/localVideoPlaylist.js"></script>
+    <script src="./Scripts/localAudioPlaylist.js"></script>
     <script src="./Scripts/facebook.js"></script>
     <script src="./Scripts/main.js"></script>
     <script src="./Scripts/timer.js"></script>

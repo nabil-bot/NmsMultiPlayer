@@ -13,19 +13,15 @@ class LocalVideoPlaylist {
     this.playPauseBtn = null;
     this.timerStatus = null;
     this.playlistOverlay = null;
-    
-    // Track the dragged item index
     this.draggedItemIndex = null;
-    
     this.init();
   }
-
   async init() {
     this.createPlayerSkeleton();
     this.loadVideo(0);
   }
 
- 
+
   createPlayerSkeleton() {
       const videosContainer = document.getElementById('videos-container');
       this.container = document.createElement('div');
@@ -237,52 +233,6 @@ class LocalVideoPlaylist {
       this.volumeSlider.disabled = true;
     }, 3500);
   }
-
-  // attachListeners(fullscreenBtn) {
-  //   this.videoPlayer.addEventListener('play', () => {
-  //     this.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-  //   });
-  //   this.videoPlayer.addEventListener('pause', () => {
-  //     this.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-  //   });
-  //   this.playPauseBtn.onclick = () => {
-  //     this.videoPlayer.paused ? this.videoPlayer.play() : this.videoPlayer.pause();
-  //   };
-
-  //   this.videoPlayer.addEventListener('timeupdate', () => {
-  //     this.currentTimeLabel.textContent = this.formatTime(this.videoPlayer.currentTime);
-  //     this.timelineSlider.value = this.videoPlayer.currentTime;
-  //     this.timelineSlider.max = this.videoPlayer.duration || 0;
-  //     this.durationLabel.textContent = this.formatTime(this.videoPlayer.duration || 0);
-      
-  //     const currentUrl = this.videoData[this.currentIndex].url;
-  //     this.saveCookieData(currentUrl, this.videoPlayer.currentTime, this.videoPlayer.volume);
-  //   });
-
-  //   this.timelineSlider.oninput = () => {
-  //     this.videoPlayer.currentTime = this.timelineSlider.value;
-  //   };
-
-  //   this.volumeSlider.oninput = () => {
-  //     this.videoPlayer.volume = this.volumeSlider.value;
-  //   };
-
-  //   fullscreenBtn.onclick = () => {
-  //     if (document.fullscreenElement) {
-  //       document.exitFullscreen();
-  //     } else {
-  //       this.videoPlayer.requestFullscreen();
-  //     }
-  //   };
-
-  //   this.videoPlayer.addEventListener('ended', () => this.next());
-    
-  //   // Hide playlist overlay if clicking anywhere else in the container
-  //   this.container.addEventListener('click', () => {
-  //       this.playlistOverlay.style.display = 'none';
-  //   });
-  //   this.playlistOverlay.addEventListener('click', (e) => e.stopPropagation());
-  // }
   attachListeners() {
     this.videoPlayer.addEventListener('play', () => {
         this.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
