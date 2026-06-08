@@ -31,23 +31,14 @@ class multiPlayer {
         this.fileInput.addEventListener('change', this.handleFileChange);
         this.playlistInput.addEventListener('change', this.handlePlaylistChange);
         this.audioPlayListInput.addEventListener('change', this.handleAudioPlaylistChange);
-
         this.playlistPlayer = null;
         this.playlistIframe = null;
         this.playlistMediaLabel = null;
-
         this.localAudioPlaylistInstance = null;
+        this.singleYoutubePlayers = [];
 
     }
-
    handleMediaSignal(action) {
-
-        /*
-        =========================================================
-        1. YOUTUBE PLAYLIST HAS HIGHEST PRIORITY
-        =========================================================
-        */
-
         if (this.playlistPlayer && this.ytPlaylist.length > 0) {
 
             const state = this.playlistPlayer.getPlayerState();
@@ -90,13 +81,6 @@ class multiPlayer {
                     return;
             }
         }
-
-        /*
-        =========================================================
-        2. LOCAL AUDIO PLAYLIST SECOND PRIORITY
-        =========================================================
-        */
-
         if (this.localAudioPlaylistInstance) {
 
             const audioPlaylist = this.localAudioPlaylistInstance;
@@ -138,13 +122,6 @@ class multiPlayer {
                     return;
             }
         }
-
-        /*
-        =========================================================
-        3. GLOBAL FALLBACK
-        =========================================================
-        */
-
         switch (action) {
 
             case 'PLAY':
@@ -156,7 +133,6 @@ class multiPlayer {
                 break;
         }
     }
-
     browse() {sendWebViewSignal('VIDEO_BROWSE', 'Browse');}
     paste() {
       pasteFromClipboard();
@@ -231,7 +207,21 @@ class multiPlayer {
         }
       }
       } // end of addVideo
-    async addYoutubeVideo(videoUrl, volume=70, isPlaylist=false, playlistVideos=[], timeFrame=0, playlistIndex=0, customPlaylist=false, saved_name=null) {
+   
+    togglePlayAfterPlaylist(videoWrapper, menuItemElement) {
+
+    videoWrapper.playAfterPlaylist =
+        !videoWrapper.playAfterPlaylist;
+
+    const enabled = videoWrapper.playAfterPlaylist;
+
+    menuItemElement.innerHTML =
+        `<i class="fas fa-${enabled ? 'check-square' : 'square'}"
+            style="margin-right:10px"></i>
+         Play After Playlist Ends`;
+}
+    
+      async addYoutubeVideo(videoUrl, volume=70, isPlaylist=false, playlistVideos=[], timeFrame=0, playlistIndex=0, customPlaylist=false, saved_name=null) {
       try{
         
         if (isPlaylist){
@@ -302,6 +292,8 @@ class multiPlayer {
         menu.style.display = "none";
         document.body.appendChild(menu);
 
+        const hasPlaylist = this.ytPlaylist.length > 0;
+
         const menuItems = [
           { text: "Reload", iconClass: "fas fa-redo" },
           { text: "Set Pause Timer", iconClass: "fas fa-pause" },
@@ -311,6 +303,19 @@ class multiPlayer {
           { text: "Remove Unplayable", iconClass: "fa-solid fa-video-slash fa-lg" },
            {text: 'Remove', iconClass: 'fa-solid fa-xmark fa-xl'}
         ];
+
+        if (!isPlaylist) {
+          menuItems.splice(
+              menuItems.length - 1,
+              0,
+              {
+                  text: "Play After Playlist Ends",
+                  iconClass: "fas fa-list-check",
+                  checkable: true
+              }
+          );
+      }
+
         const onlyForPlaylist = ['Remove Unplayable', 'Save as Playlist'];
         menuItems.forEach((item) => {
           if (!isPlaylist && onlyForPlaylist.includes(item.text)) return;
@@ -376,7 +381,16 @@ class multiPlayer {
                     alert(e);
                   }
                     }
-               };
+              if (item.text === "Play After Playlist Ends") {
+
+                if (this.ytPlaylist.length === 0) {
+                    alert("No YouTube playlist available.");
+                    return;
+                }
+
+                this.togglePlayAfterPlaylist(videoWrapper, el);
+            }
+          };
           menu.appendChild(el);
         });
         menuBtn.onclick = (e) => {
@@ -441,6 +455,10 @@ class multiPlayer {
         }
         this.videosContainer.appendChild(videoWrapper);
         const player = this.initializeYouTubeAPI(iframe, volume, timeFrame, mediaLabel, isPlaylist);
+
+        if (!isPlaylist) {
+            videoWrapper.playAfterPlaylist = false;
+        }
         if (!customPlaylist) {
           const dic = getCookie("urlDic") || {};
           dic[videoUrl] = dic[videoUrl] || { volume, timeFrame };
@@ -471,7 +489,6 @@ class multiPlayer {
           get_timer_time("Set Play Timer").then((playTime) => {
             const videoPlayer = players.find(p => p.getIframe() === iframe);
             if (!videoPlayer) return;
-
             startMediaTimer(videoPlayer, playTime, "play", timerStatus, 'youtube');
           })
           }  
@@ -485,6 +502,28 @@ class multiPlayer {
         this.playlistLabel.textContent = `${this.currentPlaylistIndex + 1}/${this.ytPlaylist.length}`;
     }  
    
+    notifyPlaylistEnded() {
+
+        console.log("PLAYLIST ENDED");
+
+        this.singleYoutubePlayers.forEach(entry => {
+
+            console.log(
+                entry.wrapper,
+                entry.wrapper?.playAfterPlaylist
+            );
+
+            if (
+                entry.wrapper &&
+                entry.wrapper.playAfterPlaylist
+            ) {
+
+                console.log("PLAYING TARGET VIDEO");
+
+                entry.player.playVideo();
+            }
+        });
+    }
 
   changePlaylistVideo(dir, iframe, mediaLabel) {
         if (!this.ytPlaylist.length || this.ytPlaylist.length === 1) return;
@@ -494,23 +533,16 @@ class multiPlayer {
         
         const newUrl = this.ytPlaylist[this.currentPlaylistIndex];
         const newId = getVideoId(newUrl);
-
-        // Find the existing player instance for this iframe
         const player = players.find(p => p.getIframe() === iframe);
 
         if (player && typeof player.loadVideoById === 'function') {
-            // Use the API to change the video smoothly
             player.loadVideoById(newId);
-            
-            // Update label after a short delay so the API has time to fetch the new title
             setTimeout(() => {
                 if (mediaLabel) mediaLabel.textContent = player.getVideoData().title;
             }, 500);
         } else {
-            // Fallback if player isn't ready: Update SRC (standard way)
             iframe.src = `https://www.youtube.com/embed/${newId}?autoplay=1&enablejsapi=1`;
         }
-
         if (this.playlistViewInstance) {
             this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
         }
@@ -519,12 +551,10 @@ class multiPlayer {
     initializeYouTubeAPI(iframe, volume_, timeFrame, mediaLabel, isPlaylist) {
           iframe.dataset.targetVolume = volume_;
           let existingPlayer = players.find(p => p.getIframe() === iframe);
-
           if (existingPlayer) {
               existingPlayer.setVolume(Number(volume_));
               return; 
           }
-
           const createPlayer = () => {
               const player = new YT.Player(iframe, {
                   events: {
@@ -541,16 +571,38 @@ class multiPlayer {
                               this.playlistPlayer = e.target;
                               this.playlistIframe = iframe;
                               this.playlistMediaLabel = mediaLabel;
+                          } else {
+                              this.singleYoutubePlayers.push({
+                                  player: e.target,
+                                  wrapper: iframe.closest(".video-wrapper")
+                              });
                           }
                       },
                       onStateChange: (e) => {
+
+
                           if (e.data === YT.PlayerState.ENDED && isPlaylist) {
-                          const isNotLastVideo = this.currentPlaylistIndex < this.ytPlaylist.length - 1;
+
+                            const isLastVideo =
+                                this.currentPlaylistIndex >=
+                                this.ytPlaylist.length - 1;
+
+                            if (
+                                !isLastVideo &&
+                                this.autoPlayCheckBox &&
+                                this.autoPlayCheckBox.checked
+                            ) {
+                                this.changePlaylistVideo(+1, iframe, mediaLabel);
+                                return;
+                            }
+
+                            if (isLastVideo) {
+                                this.notifyPlaylistEnded();
+                            }
+                        }
+
+
                           
-                          if (this.autoPlayCheckBox && this.autoPlayCheckBox.checked && isNotLastVideo) {
-                              this.changePlaylistVideo(+1, iframe, mediaLabel);
-                          }
-                      }
                       },
                   },
               });
@@ -572,7 +624,6 @@ class multiPlayer {
       } else{
         this.ytPlaylist.push(url);
         this.updatePlaylistLabel()
-        // 3. If the UI is live, tell it to refresh its view of the data
         if (this.ytPlaylist_loaded && this.playlistViewInstance) {
             this.playlistViewInstance.syncUI(); 
         }
@@ -663,23 +714,15 @@ class multiPlayer {
           const icon = showPlaylistBtn.querySelector('i');
 
           const playlistContainer = document.getElementById("playlist-container");
-          
-          // Toggle the state first
           this.showingPlaylist = !this.showingPlaylist;
 
           if (this.showingPlaylist) {
-              // We are now showing it, so show UP
               icon.classList.remove('fa-caret-down');
               icon.classList.add('fa-caret-up');
-              // Add code here to actually show your playlist UI
           } else {
-              // We are hiding it, so show DOWN
               icon.classList.remove('fa-caret-up');
               icon.classList.add('fa-caret-down');
-              // Add code here to actually hide your playlist UI
           }
-
-
 
           if (this.showingPlaylist) {
             playlistContainer.style.display = "block";
@@ -693,32 +736,20 @@ class multiPlayer {
                     },
                     onDelete: (idx) => {
                       const wasPlayingDeleted = (idx === this.currentPlaylistIndex);
-                      
-                      // 1. Remove from data array
                       this.ytPlaylist.splice(idx, 1);
-
-                      // 2. Handle Index Re-calculation
                       if (this.ytPlaylist.length === 0) {
-                          // Case: Playlist is now empty
                           this.currentPlaylistIndex = 0;
-                          this.stopPlayer(); // Logic to clear iframe
+                          this.stopPlayer(); 
                       } 
                       else if (idx < this.currentPlaylistIndex) {
-                          // Case: Deleted something above. 
-                          // We stay on the same video, but its index decreased.
                           this.currentPlaylistIndex--;
                       } 
                       else if (wasPlayingDeleted) {
-                          // Case: Deleted the active video.
-                          // If we deleted the last item, stay on the new last index.
                           if (this.currentPlaylistIndex >= this.ytPlaylist.length) {
                               this.currentPlaylistIndex = this.ytPlaylist.length - 1;
                           }
-                          // Auto-play the "new" video at this position
                           this.changePlaylistVideo(0, iframe, mediaLabel);
                       }
-
-                      // 3. Update the UI Highlight (Sync the blue active state)
                       if (this.playlistViewInstance) {
                           this.playlistViewInstance.highlightCurrent(this.currentPlaylistIndex);
                       }
@@ -727,7 +758,6 @@ class multiPlayer {
                   },
                     onReorder: (newList) => {
                         this.ytPlaylist = newList;
-                        // Save to cookies here if needed
                     }
                 });
                 this.playlistViewInstance.init(this.currentPlaylistIndex);
@@ -736,9 +766,6 @@ class multiPlayer {
         } else {
             playlistContainer.style.display = "none";
         }
-
-
       }
 }
-
 const multiPlayerInstance = new multiPlayer();
