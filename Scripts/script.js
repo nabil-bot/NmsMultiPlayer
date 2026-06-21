@@ -642,14 +642,14 @@ function sendWebViewSignal(type_, title_) {
 
 
 
-document.addEventListener("fullscreenchange", () => {
-  const fullscreenElement = document.fullscreenElement;
-  if (fullscreenElement) {
-    sendWebViewSignal('FULL_SCREEN_SIGNAL', 'true');
-  } else {
-    sendWebViewSignal('FULL_SCREEN_SIGNAL', 'false');
-  }
-});
+// document.addEventListener("fullscreenchange", () => {
+//   const fullscreenElement = document.fullscreenElement;
+//   if (fullscreenElement) {
+//     sendWebViewSignal('FULL_SCREEN_SIGNAL', 'true');
+//   } else {
+//     sendWebViewSignal('FULL_SCREEN_SIGNAL', 'false');
+//   }
+// });
 
 
 function setCookie(name, value, daysToExpire) {
