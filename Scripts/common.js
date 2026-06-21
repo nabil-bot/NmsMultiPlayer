@@ -62,12 +62,16 @@ function callNative(type, payload) {
   
   return new Promise((resolve, reject) => {
     pendingRequests.set(requestId, { resolve, reject });
-
-    window.ReactNativeWebView.postMessage(JSON.stringify({
-      type: type,
-      requestId: requestId,
-      payload: payload // This matches message.payload in RN
-    }));
+    try{
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: type,
+        requestId: requestId,
+        payload: payload // This matches message.payload in RN
+      }));
+    } catch (error) {
+      
+    }
+      
   });
 }
 
