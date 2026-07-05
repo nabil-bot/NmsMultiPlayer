@@ -256,7 +256,7 @@ class multiPlayer {
         iframe.height = "252";
         iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
         iframe.frameBorder = "0";
-        iframe.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture";
+        iframe.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen";
         iframe.allowFullscreen = true;
         const volumeContainer = document.createElement("div");
         volumeContainer.classList.add("volume-container");
