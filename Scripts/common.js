@@ -1,14 +1,14 @@
 let players = [];
 const controls = document.getElementById('globalControls');
 
-document.addEventListener("fullscreenchange", () => {
-  const fullscreenElement = document.fullscreenElement;
-  if (fullscreenElement) {
-    sendWebViewSignal('FULL_SCREEN_SIGNAL', 'true');
-  } else {
-    sendWebViewSignal('FULL_SCREEN_SIGNAL', 'false');
-  }
-});
+// document.addEventListener("fullscreenchange", () => {
+//   const fullscreenElement = document.fullscreenElement;
+//   if (fullscreenElement) {
+//     sendWebViewSignal('FULL_SCREEN_SIGNAL', 'true');
+//   } else {
+//     sendWebViewSignal('FULL_SCREEN_SIGNAL', 'false');
+//   }
+// });
 
 function isYouTubeUrl(url) {
   try {
@@ -24,6 +24,14 @@ function isYouTubeUrl(url) {
     return false; // invalid URL
   }
 }
+function postWebViewMessage(payload) {
+  if (window.ReactNativeWebView && typeof window.ReactNativeWebView.postMessage === 'function') {
+    window.ReactNativeWebView.postMessage(payload);
+    return true;
+  }
+  return false;
+}
+
 function pasteFromClipboard() {
   try {
     navigator.clipboard.readText()
@@ -38,17 +46,17 @@ function pasteFromClipboard() {
     console.log(error);
   }
   try {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
+    postWebViewMessage(JSON.stringify({ type: 'ClipBoardPlz', title: 'ClipBoardPlz' }));
   } catch (error){
-    alert(error);
+    console.warn('Unable to send clipboard webview message:', error);
   }
 }
 
 function sendWebViewSignal(type_, title_) {
   try {
-    window.ReactNativeWebView.postMessage(JSON.stringify({ type: type_, title: title_ }));
+    postWebViewMessage(JSON.stringify({ type: type_, title: title_ }));
   } catch (error) {
-    alert(error);
+    console.warn('Unable to send fullscreen webview signal:', error);
   }
 }
 
@@ -63,7 +71,7 @@ function callNative(type, payload) {
   return new Promise((resolve, reject) => {
     pendingRequests.set(requestId, { resolve, reject });
     try{
-      window.ReactNativeWebView.postMessage(JSON.stringify({
+      postWebViewMessage(JSON.stringify({
         type: type,
         requestId: requestId,
         payload: payload // This matches message.payload in RN
@@ -75,7 +83,6 @@ function callNative(type, payload) {
   });
 }
 
-// Updated these to wrap the keys in an object
 async function saveDataLocal(key, value) {
   return callNative('@save_data', { dataKey: key, data: value });
 }
