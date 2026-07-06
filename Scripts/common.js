@@ -10,6 +10,23 @@ const controls = document.getElementById('globalControls');
 //   }
 // });
 
+
+document.addEventListener("visibilitychange", () => {
+    console.log(
+        "visibility:",
+        document.visibilityState
+    );
+});
+
+window.addEventListener("blur", () => {
+    console.log("window blur");
+});
+
+window.addEventListener("focus", () => {
+    console.log("window focus");
+});
+
+
 function isYouTubeUrl(url) {
   try {
     const parsed = new URL(url);
