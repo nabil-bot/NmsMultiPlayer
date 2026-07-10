@@ -80,6 +80,8 @@ class multiPlayer {
 
                     return;
                 case 'DISCONNECTED':
+
+                    alert("Disconnected from playlist.");
                     handlePauseAll();
                     return;
 
