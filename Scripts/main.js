@@ -79,6 +79,10 @@ class multiPlayer {
                     );
 
                     return;
+                case 'DISCONNECTED':
+                    handlePauseAll();
+                    return;
+
             }
         }
         if (this.localAudioPlaylistInstance) {
