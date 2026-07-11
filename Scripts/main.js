@@ -36,13 +36,14 @@ class multiPlayer {
         this.playlistMediaLabel = null;
         this.localAudioPlaylistInstance = null;
         this.singleYoutubePlayers = [];
-
     }
    handleMediaSignal(action) {
-        if (this.playlistPlayer && this.ytPlaylist.length > 0) {
-
+        if (action === 'DISCONNECTED') {
+                handlePauseAll();
+                return;
+            }
+        if (this.playlistPlayer) {  // && this.ytPlaylist.length > 0
             const state = this.playlistPlayer.getPlayerState();
-
             switch (action) {
 
                 case 'PLAY':
@@ -50,41 +51,28 @@ class multiPlayer {
                     return;
 
                 case 'PAUSE':
-
-                    // Bluetooth toggle support
                     if (state === YT.PlayerState.PLAYING) {
                         this.playlistPlayer.pauseVideo();
                     } else {
                         this.playlistPlayer.playVideo();
                     }
-
                     return;
 
                 case 'NEXT':
-
                     this.changePlaylistVideo(
                         +1,
                         this.playlistIframe,
                         this.playlistMediaLabel
                     );
-
                     return;
 
                 case 'PREVIOUS':
-
                     this.changePlaylistVideo(
                         -1,
                         this.playlistIframe,
                         this.playlistMediaLabel
                     );
-
                     return;
-                case 'DISCONNECTED':
-
-                    alert("Disconnected from playlist.");
-                    handlePauseAll();
-                    return;
-
             }
         }
         if (this.localAudioPlaylistInstance) {
